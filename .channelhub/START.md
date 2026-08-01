@@ -1,32 +1,156 @@
-# START
+# CHANNELHUB AI START
 
-JANGAN langsung mengerjakan project.
+Repository:
 
-WAJIB lakukan:
+ArrowTin/gpt
+
+Project:
+
+ChannelHub Enterprise Blueprint
+
+=====================================================
+
+MISSION
+
+Bangun ChannelHub Enterprise sampai Production Ready.
+
+Repository adalah Single Source of Truth.
+
+Chat hanya media komunikasi.
+
+=====================================================
+
+RULE
+
+JANGAN scan repository.
+
+JANGAN list directory.
+
+JANGAN membuat asumsi.
+
+JANGAN mengulang phase.
+
+JANGAN mengubah arsitektur.
+
+JANGAN membuat struktur baru jika sudah ada.
+
+Jika repository berbeda dengan chat,
+ikuti repository.
+
+=====================================================
+
+CURRENT STATE
+
+Current Phase
+
+21
+
+Current Milestone
+
+Integration & Deployment
+
+Current Task
+
+Create docs/21-integration-deployment
+
+Progress
+
+Foundation          ✅
+
+Architecture        ✅
+
+Backend             ✅
+
+Frontend            ✅
+
+Integration         🚧
+
+Production          ⏳
+
+=====================================================
+
+PROJECT SUMMARY
+
+ChannelHub adalah Hospitality Operating Platform.
+
+Core Architecture
+
+DDD
+
+Microservice Ready
+
+Configuration Driven
+
+Metadata Driven
+
+Event Driven
+
+API First
+
+Multi Tenant
+
+White Label
+
+NestJS
+
+NextJS
+
+PostgreSQL
+
+Redis
+
+BullMQ
+
+=====================================================
+
+REPOSITORY MAP
+
+README.md
+
+↓
+
+docs/
+
+↓
+
+00
+
+01
+
+...
+
+20
+
+↓
+
+Current Work
+
+docs/21-integration-deployment
+
+=====================================================
+
+HOW TO CONTINUE
 
 1.
-Baca README.md pada root repository.
+
+Lanjutkan Current Task.
 
 2.
-Baca seluruh file dalam .channelhub.
+
+Jangan mengulang phase sebelumnya.
 
 3.
-Bangun ulang context project.
+
+Update STATE.yml.
 
 4.
-Verifikasi milestone aktif.
+
+Update CHANGELOG.md.
 
 5.
-Cari task yang belum selesai.
 
-6.
-Lanjutkan pekerjaan tersebut.
+Selesai.
 
-Repository lebih dipercaya daripada chat.
+=====================================================
 
-Jangan membuat asumsi.
-
-Jangan mengulang phase.
-
-Setelah selesai,
-update project-state.yml dan task.yml.
+END
