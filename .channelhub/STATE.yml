@@ -1,0 +1,43 @@
+project:
+
+name: ChannelHub Enterprise
+
+repository: ArrowTin/gpt
+
+version: 1
+
+status: active
+
+phase: 21
+
+milestone:
+
+Integration & Deployment
+
+progress:
+
+foundation: completed
+
+business: completed
+
+architecture: completed
+
+backend: completed
+
+frontend: completed
+
+integration: running
+
+production: waiting
+
+current_task:
+
+docs/21-integration-deployment
+
+next_task:
+
+docs/22-security
+
+last_update:
+
+2026-08-02
