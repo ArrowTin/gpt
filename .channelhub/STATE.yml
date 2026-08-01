@@ -1,43 +1,41 @@
 project:
 
-name: ChannelHub Enterprise
+  name: ChannelHub Enterprise
 
-repository: ArrowTin/gpt
+repository:
 
-version: 1
+  name: ArrowTin/gpt
 
-status: active
+status:
 
-phase: 21
+  active: true
 
-milestone:
+current:
 
-Integration & Deployment
+  phase: 21
 
-progress:
+  milestone: Integration & Deployment
 
-foundation: completed
+execution:
 
-business: completed
+  status: running
 
-architecture: completed
+  completed_steps: []
 
-backend: completed
+  pending_steps:
 
-frontend: completed
+    - docs/21-integration-deployment/001-frontend-backend-integration.md
 
-integration: running
+    - docs/21-integration-deployment/002-docker-compose-production.md
 
-production: waiting
+    - docs/21-integration-deployment/003-ci-cd-pipeline.md
 
-current_task:
+    - docs/21-integration-deployment/004-environment-deployment.md
 
-docs/21-integration-deployment
+next:
 
-next_task:
+  phase: 22
 
-docs/22-security
+  milestone: Security
 
-last_update:
-
-2026-08-02
+last_update: 2026-08-02
