@@ -77,12 +77,16 @@ Phase: Foundation Initialization
 
 Project: ChannelHub Enterprise Blueprint
 
-# AI ENTRY
+# AI ENTRY POINT
 
-Semua AI Agent WAJIB memulai project dari:
+Repository ini menggunakan AI Bootstrap.
+
+Seluruh AI Agent WAJIB memulai dari
 
 .channelhub/START.md
 
-Repository adalah sumber kebenaran.
+Repository adalah Single Source of Truth.
 
-Jangan melakukan perubahan repository sebelum bootstrap selesai.
+AI tidak boleh membuat asumsi.
+
+AI tidak boleh melakukan bootstrap dari chat.
