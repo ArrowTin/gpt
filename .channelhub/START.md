@@ -54,6 +54,27 @@ bertentangan dengan repository,
 ikuti repository.
 
 ==================================================
+## Authority
+
+Repository adalah Single Source of Truth untuk:
+
+- visi proyek
+- arsitektur
+- keputusan
+- progress
+- task aktif
+
+AI BERWENANG membuat artefak baru (dokumen, kode, test, konfigurasi)
+SELAMA artefak tersebut:
+
+- mengikuti arsitektur repository,
+- tidak bertentangan dengan keputusan yang sudah ada,
+- berada pada milestone aktif.
+
+AI tidak perlu menunggu blueprint tambahan jika milestone sudah mendefinisikan target pekerjaan.
+
+
+==================================================
 
 PROJECT
 
