@@ -1,116 +1,94 @@
-# CHANNELHUB AI BOOTSTRAP
+# CHANNELHUB AI EXECUTION CONTRACT
 
 
-==================================================
+===========================================================
+MISSION
+===========================================================
 
-BOOT MODE
+Repository:
+ArrowTin/gpt
+
+Project:
+ChannelHub Enterprise Blueprint
 
 Repository adalah Single Source of Truth.
 
-Jangan gunakan isi chat sebagai sumber context.
+Chat BUKAN sumber context.
 
-==================================================
+===========================================================
+BOOTSTRAP
+===========================================================
 
-RULES
+AI WAJIB melakukan langkah berikut:
 
 1.
-
-Jangan melakukan repository scan secara default.
+Baca README.md pada root repository.
 
 2.
-
-Jangan melakukan directory listing.
+Baca file START.md ini.
 
 3.
-
-Gunakan file yang disebutkan START.md.
+ANGGAP seluruh informasi pada START.md valid.
 
 4.
-
-Jika file yang disebutkan tidak bisa dibaca,
-lanjutkan menggunakan informasi START.md.
+JANGAN melakukan repository scan.
 
 5.
-
-Jangan berhenti bekerja hanya karena
-repository tidak dapat di-list.
+JANGAN melakukan directory listing.
 
 6.
+JANGAN meminta context tambahan
+jika seluruh informasi di bawah tersedia.
 
-Jika operasi CREATE gagal
-karena file sudah ada,
-gunakan UPDATE.
+===========================================================
+AUTHORITY
+===========================================================
 
-7.
+AI DIBERIKAN KEWENANGAN UNTUK:
 
-Jika UPDATE gagal
-karena file tidak ada,
-gunakan CREATE.
+✓ membuat file baru
 
-8.
+✓ mengubah file
 
-Jika informasi pada chat
-bertentangan dengan repository,
-ikuti repository.
+✓ memperbarui dokumen
 
-==================================================
-## Authority
+✓ membuat source code
 
-Repository adalah Single Source of Truth untuk:
+✓ membuat diagram
 
-- visi proyek
-- arsitektur
-- keputusan
-- progress
-- task aktif
+✓ membuat docker
 
-AI BERWENANG membuat artefak baru (dokumen, kode, test, konfigurasi)
-SELAMA artefak tersebut:
+✓ membuat CI/CD
 
-- mengikuti arsitektur repository,
-- tidak bertentangan dengan keputusan yang sudah ada,
-- berada pada milestone aktif.
+✓ membuat testing
 
-AI tidak perlu menunggu blueprint tambahan jika milestone sudah mendefinisikan target pekerjaan.
+SELAMA:
 
+- tidak mengubah arsitektur utama
 
-==================================================
+- mengikuti README
 
-PROJECT
+- mengikuti folder docs
 
-Name:
+- mengikuti milestone aktif
+
+AI TIDAK PERLU blueprint tambahan.
+
+AI TIDAK PERLU meminta izin lagi.
+
+===========================================================
+PROJECT SUMMARY
+===========================================================
+
+Nama:
 
 ChannelHub Enterprise
 
-Repository:
+Jenis:
 
-ArrowTin/gpt
+Hospitality Operating Platform
 
-==================================================
-
-ARCHITECTURE
-
-Backend
-
-NestJS
-
-Frontend
-
-NextJS
-
-Database
-
-PostgreSQL
-
-Cache
-
-Redis
-
-Queue
-
-BullMQ
-
-Pattern
+Architecture:
 
 DDD
 
@@ -120,70 +98,222 @@ API First
 
 Configuration Driven
 
-==================================================
+Metadata Driven
 
-CURRENT EXECUTION
+Microservice Ready
 
-Phase
+Backend:
+
+NestJS
+
+Frontend:
+
+NextJS
+
+Database:
+
+PostgreSQL
+
+Cache:
+
+Redis
+
+Queue:
+
+BullMQ
+
+===========================================================
+CURRENT STATE
+===========================================================
+
+Current Phase:
 
 21
 
-Milestone
+Current Milestone:
 
 Integration & Deployment
 
-==================================================
+Status:
 
-EXECUTION PLAN
+RUNNING
 
-STEP 1
+===========================================================
+REFERENCES
+===========================================================
 
-CREATE
+Saat membuat Phase 21,
+gunakan referensi berikut:
 
-docs/21-integration-deployment/
+README.md
+
+docs/02-system-architecture/
+
+docs/16-api-contract/
+
+docs/18-core-services/
+
+docs/19-backend-application/
+
+docs/20-frontend-application/
+
+JANGAN mencari referensi lain.
+
+===========================================================
+DELIVERABLES
+===========================================================
+
+AI WAJIB menghasilkan:
 
 001-frontend-backend-integration.md
 
-STEP 2
-
-CREATE
-
 002-docker-compose-production.md
-
-STEP 3
-
-CREATE
 
 003-ci-cd-pipeline.md
 
-STEP 4
-
-CREATE
-
 004-environment-deployment.md
 
-STEP 5
+===========================================================
+SPECIFICATION
+===========================================================
 
+001
+
+Menjelaskan integrasi Frontend dan Backend.
+
+Minimal berisi:
+
+- Overview
+
+- Architecture
+
+- Authentication Flow
+
+- API Communication
+
+- Error Handling
+
+- Retry
+
+- Deployment Notes
+
+- Best Practice
+
+-----------------------------------------------------------
+
+002
+
+Blueprint Docker Production.
+
+Minimal:
+
+- Services
+
+- Networks
+
+- Volumes
+
+- Secrets
+
+- Reverse Proxy
+
+- Scaling
+
+- Healthcheck
+
+-----------------------------------------------------------
+
+003
+
+CI/CD.
+
+Minimal:
+
+- Workflow
+
+- Build
+
+- Test
+
+- Security Scan
+
+- Docker Build
+
+- Deploy
+
+-----------------------------------------------------------
+
+004
+
+Environment.
+
+Minimal:
+
+- Development
+
+- Staging
+
+- Production
+
+- Variables
+
+- Secrets
+
+- Monitoring
+
+===========================================================
+DEFINITION OF DONE
+===========================================================
+
+Milestone dianggap selesai jika:
+
+✓ seluruh deliverables selesai
+
+✓ seluruh specification terpenuhi
+
+✓ struktur konsisten
+
+✓ cross reference benar
+
+✓ README tidak dilanggar
+
+===========================================================
 UPDATE
+===========================================================
 
-.channelhub/STATE.yaml
+Setelah selesai:
 
-STEP 6
+Update:
 
-APPEND
+.channelhub/STATE.yml
+
+Tambahkan entry baru ke
 
 .channelhub/CHANGELOG.md
 
-==================================================
+===========================================================
+FAILSAFE
+===========================================================
 
-SUCCESS CONDITION
+Jika AI tidak dapat:
 
-Semua file pada EXECUTION PLAN selesai.
+- scan repository
 
-STATE.yaml terupdate.
+- list directory
 
-CHANGELOG.md terupdate.
+- membaca file selain README
 
-==================================================
+MAKA:
+
+Gunakan START.md sebagai
+working context.
+
+JANGAN berhenti bekerja.
+
+JANGAN meminta context ulang.
+
+JANGAN meminta blueprint tambahan.
+
+Lanjutkan implementasi.
 
 END
