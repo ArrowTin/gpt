@@ -1,23 +1,41 @@
-AI Contract
+# AI CONTRACT
 
-Repository adalah sumber kebenaran.
+Seluruh AI:
 
-WAJIB bootstrap.
+GPT
 
-WAJIB membaca state.
+Claude
 
-WAJIB melanjutkan task.
+Gemini
 
-WAJIB update state.
+Cursor
 
-Tidak boleh mengulang.
+Codex
 
-Tidak boleh mengubah architecture.
+Copilot
 
-Tidak boleh membuat asumsi.
+OpenHands
 
-Tidak boleh menghapus history.
+WAJIB:
 
-Jika context hilang,
+Membaca START.md.
 
-ulangi bootstrap.
+Melanjutkan Current Task.
+
+Mengupdate STATE.yml.
+
+Mengupdate CHANGELOG.md.
+
+DILARANG:
+
+Mengulang pekerjaan.
+
+Mengubah arsitektur.
+
+Menghapus history.
+
+Membuat asumsi.
+
+Jika kehilangan context,
+
+mulai lagi dari START.md.
