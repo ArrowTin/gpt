@@ -4,38 +4,72 @@ project:
 
 repository:
 
-  name: ArrowTin/gpt
+  ArrowTin/gpt
+
+phase:
+
+  current: 21
+
+milestone:
+
+  Integration & Deployment
 
 status:
 
-  active: true
+  running
+
+completed:
+
+  - 00-foundation
+
+  - 01-business
+
+  - 02-system-architecture
+
+  - 03-domain-model
+
+  - 04-database
+
+  - 05-api
+
+  - 06-security
+
+  - 07-frontend
+
+  - 08-backend
+
+  - 09
+
+  - 10
+
+  - 11
+
+  - 12
+
+  - 13
+
+  - 14
+
+  - 15
+
+  - 16
+
+  - 17
+
+  - 18
+
+  - 19
+
+  - 20
 
 current:
 
-  phase: 21
-
-  milestone: Integration & Deployment
-
-execution:
-
-  status: running
-
-  completed_steps: []
-
-  pending_steps:
-
-    - docs/21-integration-deployment/001-frontend-backend-integration.md
-
-    - docs/21-integration-deployment/002-docker-compose-production.md
-
-    - docs/21-integration-deployment/003-ci-cd-pipeline.md
-
-    - docs/21-integration-deployment/004-environment-deployment.md
+  docs/21-integration-deployment
 
 next:
 
-  phase: 22
+  docs/22-security
 
-  milestone: Security
+last_update:
 
-last_update: 2026-08-02
+  2026-08-02
