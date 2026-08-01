@@ -84,3 +84,9 @@ Seluruh AI Agent (GPT, Claude, Gemini, Codex, Cursor, Copilot, OpenHands, dan la
 .channelhub/README.md
 
 Jangan langsung melakukan perubahan repository sebelum proses bootstrap selesai.
+
+# AI START
+
+Semua AI Agent WAJIB memulai dari
+
+.channelhub/START.md
