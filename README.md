@@ -77,16 +77,27 @@ Phase: Foundation Initialization
 
 Project: ChannelHub Enterprise Blueprint
 
-# AI ENTRY POINT
+# AI ENTRY
 
-Repository ini menggunakan AI Bootstrap.
+Seluruh AI Agent (GPT, Claude, Gemini, Cursor, Copilot, Codex, OpenHands, dll)
 
-Seluruh AI Agent WAJIB memulai dari
+WAJIB memulai dari
 
 .channelhub/START.md
 
-Repository adalah Single Source of Truth.
+START.md merupakan AI Execution Contract.
 
-AI tidak boleh membuat asumsi.
+START.md sudah mengandung seluruh informasi minimum yang diperlukan untuk melanjutkan project.
 
-AI tidak boleh melakukan bootstrap dari chat.
+AI TIDAK BOLEH menghentikan pekerjaan hanya karena:
+
+- tidak bisa list directory
+
+- tidak bisa scan repository
+
+- tidak bisa membaca file lain
+
+Jika kondisi tersebut terjadi,
+
+AI WAJIB menggunakan START.md sebagai working context dan tetap melanjutkan implementasi.
+
