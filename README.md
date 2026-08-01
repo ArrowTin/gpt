@@ -1,172 +1,78 @@
-# GPT Project Hub
+# ChannelHub Enterprise Blueprint
 
-## Visi
+> Single Source of Truth untuk membangun ekosistem ChannelHub.
 
-Repository ini menjadi pusat pengembangan berbagai proyek berbasis teknologi modern, artificial intelligence, automation, dan software engineering.
+## Overview
 
-Tujuan utama:
+Repository ini menjadi pusat dokumentasi resmi pembangunan ChannelHub.
 
-- Membangun ekosistem aplikasi yang memanfaatkan AI sebagai partner kerja.
-- Mengembangkan solusi digital yang memiliki nilai bisnis nyata.
-- Menggabungkan software engineering, automation, dan agentic AI untuk menciptakan sistem yang dapat berkembang secara mandiri.
-- Menjadi fondasi pengembangan berbagai produk digital jangka panjang.
+ChannelHub bukan hanya aplikasi channel manager, tetapi Hospitality Operating Platform yang menghubungkan properti, OTA, reservasi, distribusi channel, pembayaran, analitik, automation, dan AI.
 
----
+## Core Principles
 
-# Arsitektur Umum
+- Configuration Driven Architecture
+- Metadata Driven Platform
+- Domain Driven Design
+- Modular Architecture
+- Microservice Ready
+- API First
+- Event Driven Architecture
+- Multi Tenant
+- White Label Ready
+- Observability First
+- Security by Design
+- AI Assisted Development
 
-## Prinsip Desain
+## Architecture Philosophy
 
-Sistem dibangun dengan pendekatan:
+Hal yang dapat berubah harus menjadi konfigurasi.
 
-- Modular architecture
-- API first
-- Cloud native
-- Containerized deployment
-- Automation driven
-- AI assisted development
+Contoh:
 
-## High Level Architecture
-
-```
-User
- |
-Frontend Applications
- |
-API Gateway
- |
-Backend Services
- |
-Database + Cache + Message Queue
- |
-AI Agents & Automation Layer
-```
-
-## Komponen Utama
-
-### Frontend
-
-Teknologi:
-
-- Next.js
-- React
-- TypeScript
-- Responsive UI
-
-Tanggung jawab:
-
-- User interface
+- Landing page
+- Menu
 - Dashboard
-- Client interaction
-- Data visualization
+- Role
+- Permission
+- Subscription
+- Pricing
+- Workflow
+- Notification
+- Connector OTA
+- Report
 
-### Backend
+## Development Flow
 
-Teknologi:
+```
+Business Requirement
+        ↓
+Blueprint
+        ↓
+Architecture Decision
+        ↓
+Implementation
+        ↓
+Testing
+        ↓
+Deployment
+        ↓
+Monitoring
+```
 
-- Node.js
-- NestJS
-- REST API / WebSocket
-- PostgreSQL
-- Redis
+## Repository
 
-Tanggung jawab:
+```
+/docs        Business, Product, Architecture
+/adr         Architecture Decision Record
+/prompts     AI Development Prompt
+/standards   Engineering Standard
+/templates   Document Template
+/diagrams    Architecture Diagram
+/checklists  Quality Checklist
+```
 
-- Business logic
-- Authentication
-- Authorization
-- Integration service
-- Background processing
+## Status
 
-### Infrastructure
+Phase: Foundation Initialization
 
-Teknologi:
-
-- Docker
-- Docker Compose
-- Linux Server
-- CI/CD
-
-Tanggung jawab:
-
-- Deployment
-- Monitoring
-- Scaling
-- Environment management
-
-### AI Layer
-
-Komponen:
-
-- AI Agent
-- Automation workflow
-- Knowledge management
-- Data analysis
-
-Tujuan:
-
-Membuat sistem yang mampu membantu operasional, analisis, dan pengambilan keputusan.
-
----
-
-# Roadmap
-
-## Phase 1 - Foundation
-
-Status: Planning
-
-Target:
-
-- Membuat struktur repository.
-- Menentukan standar coding.
-- Menyiapkan dokumentasi.
-- Menyiapkan environment development.
-
-## Phase 2 - Core Platform
-
-Target:
-
-- Backend service foundation.
-- Frontend application foundation.
-- Authentication system.
-- Database architecture.
-- API documentation.
-
-## Phase 3 - AI Integration
-
-Target:
-
-- Implementasi AI assistant.
-- Agent workflow.
-- Automation engine.
-- Knowledge base system.
-
-## Phase 4 - Business Applications
-
-Target:
-
-Mengembangkan produk nyata seperti:
-
-- Channel Manager OTA.
-- AI Customer Service.
-- Business automation platform.
-- Education technology platform.
-- Digital management system.
-
-## Phase 5 - Scale & Ecosystem
-
-Target:
-
-- Multi product ecosystem.
-- Subscription model.
-- Cloud deployment.
-- Marketplace integration.
-- Continuous improvement system.
-
----
-
-# Development Philosophy
-
-> Build systems that create value, automate repetitive work, and continuously improve.
-
-Repository ini akan berkembang secara bertahap melalui dokumentasi, eksperimen, implementasi, dan evaluasi berkelanjutan.
+Project: ChannelHub Enterprise Blueprint
