@@ -77,16 +77,12 @@ Phase: Foundation Initialization
 
 Project: ChannelHub Enterprise Blueprint
 
-# AI Entry Point
+# AI ENTRY
 
-Seluruh AI Agent (GPT, Claude, Gemini, Codex, Cursor, Copilot, OpenHands, dan lainnya) WAJIB memulai pekerjaan dengan membaca:
-
-.channelhub/README.md
-
-Jangan langsung melakukan perubahan repository sebelum proses bootstrap selesai.
-
-# AI START
-
-Semua AI Agent WAJIB memulai dari
+Semua AI Agent WAJIB memulai project dari:
 
 .channelhub/START.md
+
+Repository adalah sumber kebenaran.
+
+Jangan melakukan perubahan repository sebelum bootstrap selesai.
