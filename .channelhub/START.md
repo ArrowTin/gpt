@@ -1,156 +1,168 @@
-# CHANNELHUB AI START
+# CHANNELHUB AI BOOTSTRAP
+
+
+==================================================
+
+BOOT MODE
+
+Repository adalah Single Source of Truth.
+
+Jangan gunakan isi chat sebagai sumber context.
+
+==================================================
+
+RULES
+
+1.
+
+Jangan melakukan repository scan secara default.
+
+2.
+
+Jangan melakukan directory listing.
+
+3.
+
+Gunakan file yang disebutkan START.md.
+
+4.
+
+Jika file yang disebutkan tidak bisa dibaca,
+lanjutkan menggunakan informasi START.md.
+
+5.
+
+Jangan berhenti bekerja hanya karena
+repository tidak dapat di-list.
+
+6.
+
+Jika operasi CREATE gagal
+karena file sudah ada,
+gunakan UPDATE.
+
+7.
+
+Jika UPDATE gagal
+karena file tidak ada,
+gunakan CREATE.
+
+8.
+
+Jika informasi pada chat
+bertentangan dengan repository,
+ikuti repository.
+
+==================================================
+
+PROJECT
+
+Name:
+
+ChannelHub Enterprise
 
 Repository:
 
 ArrowTin/gpt
 
-Project:
+==================================================
 
-ChannelHub Enterprise Blueprint
+ARCHITECTURE
 
-=====================================================
+Backend
 
-MISSION
+NestJS
 
-Bangun ChannelHub Enterprise sampai Production Ready.
+Frontend
 
-Repository adalah Single Source of Truth.
+NextJS
 
-Chat hanya media komunikasi.
+Database
 
-=====================================================
+PostgreSQL
 
-RULE
+Cache
 
-JANGAN scan repository.
+Redis
 
-JANGAN list directory.
+Queue
 
-JANGAN membuat asumsi.
+BullMQ
 
-JANGAN mengulang phase.
-
-JANGAN mengubah arsitektur.
-
-JANGAN membuat struktur baru jika sudah ada.
-
-Jika repository berbeda dengan chat,
-ikuti repository.
-
-=====================================================
-
-CURRENT STATE
-
-Current Phase
-
-21
-
-Current Milestone
-
-Integration & Deployment
-
-Current Task
-
-Create docs/21-integration-deployment
-
-Progress
-
-Foundation          ✅
-
-Architecture        ✅
-
-Backend             ✅
-
-Frontend            ✅
-
-Integration         🚧
-
-Production          ⏳
-
-=====================================================
-
-PROJECT SUMMARY
-
-ChannelHub adalah Hospitality Operating Platform.
-
-Core Architecture
+Pattern
 
 DDD
-
-Microservice Ready
-
-Configuration Driven
-
-Metadata Driven
 
 Event Driven
 
 API First
 
-Multi Tenant
+Configuration Driven
 
-White Label
+==================================================
 
-NestJS
+CURRENT EXECUTION
 
-NextJS
+Phase
 
-PostgreSQL
+21
 
-Redis
+Milestone
 
-BullMQ
+Integration & Deployment
 
-=====================================================
+==================================================
 
-REPOSITORY MAP
+EXECUTION PLAN
 
-README.md
+STEP 1
 
-↓
+CREATE
 
-docs/
+docs/21-integration-deployment/
 
-↓
+001-frontend-backend-integration.md
 
-00
+STEP 2
 
-01
+CREATE
 
-...
+002-docker-compose-production.md
 
-20
+STEP 3
 
-↓
+CREATE
 
-Current Work
+003-ci-cd-pipeline.md
 
-docs/21-integration-deployment
+STEP 4
 
-=====================================================
+CREATE
 
-HOW TO CONTINUE
+004-environment-deployment.md
 
-1.
+STEP 5
 
-Lanjutkan Current Task.
+UPDATE
 
-2.
+.channelhub/STATE.yaml
 
-Jangan mengulang phase sebelumnya.
+STEP 6
 
-3.
+APPEND
 
-Update STATE.yml.
+.channelhub/CHANGELOG.md
 
-4.
+==================================================
 
-Update CHANGELOG.md.
+SUCCESS CONDITION
 
-5.
+Semua file pada EXECUTION PLAN selesai.
 
-Selesai.
+STATE.yaml terupdate.
 
-=====================================================
+CHANGELOG.md terupdate.
+
+==================================================
 
 END
