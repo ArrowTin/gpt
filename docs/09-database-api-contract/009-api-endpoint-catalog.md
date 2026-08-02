@@ -1,5 +1,12 @@
 # ChannelHub API Endpoint Catalog Blueprint
 
+> **Status: konseptual.** Dokumen ini menjelaskan pemikiran domain pada Phase 09.
+> Sumber kebenaran implementasi adalah contract artifact:
+> [contracts/openapi/channelhub.v1.yaml](../../contracts/openapi/channelhub.v1.yaml),
+> [docs/15-database-implementation/009-canonical-erd.md](../15-database-implementation/009-canonical-erd.md),
+> [docs/15-database-implementation/010-postgresql-ddl-reference.md](../15-database-implementation/010-postgresql-ddl-reference.md).
+> Bila terjadi perbedaan, contract artifact yang berlaku.
+
 ## Purpose
 
 Mendefinisikan daftar endpoint utama sebelum implementasi backend.
@@ -11,7 +18,7 @@ Mendefinisikan daftar endpoint utama sebelum implementasi backend.
 ```
 POST /auth/login
 POST /auth/logout
-GET /users/profile
+GET /users/me
 ```
 
 Responsibility:
@@ -27,7 +34,7 @@ Responsibility:
 ```
 POST /organizations
 GET /organizations/:id
-GET /members
+GET /users            # anggota tenant aktif, difilter X-Tenant-Id
 ```
 
 Responsibility:
@@ -42,8 +49,8 @@ Responsibility:
 ```
 POST /properties
 GET /properties/:id
-POST /inventory/update
-POST /rates/update
+PUT /properties/:id/inventory
+PUT /properties/:id/rates
 ```
 
 Responsibility:
@@ -72,10 +79,10 @@ Responsibility:
 # OTA API
 
 ```
-POST /channels/connect
-POST /sync/start
-GET /sync/logs
-POST /webhooks/ota
+POST /channel-connections
+POST /channel-connections/:id/sync
+GET /sync-jobs
+POST /webhooks/ota/:channelCode
 ```
 
 Responsibility:
@@ -95,3 +102,5 @@ Setiap endpoint wajib memiliki:
 - Validation.
 - Documentation.
 - Error contract.
+
+Daftar endpoint final beserta permission dan perilaku khususnya ada di [docs/16-api-contract/009-api-endpoint-specification.md](../16-api-contract/009-api-endpoint-specification.md).

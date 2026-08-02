@@ -1,5 +1,10 @@
 # ChannelHub Core Module Master Integration Blueprint
 
+> **Status: konseptual.** Desain module pada Phase 08 adalah pemikiran awal.
+> Implementasi mengikuti [docs/17-core-services/](../17-core-services/),
+> [docs/19-backend-application/](../19-backend-application/), dan contract artifact pada
+> [docs/README.md](../README.md).
+
 ## Purpose
 
 Menyatukan seluruh core module menjadi satu ekosistem yang konsisten.

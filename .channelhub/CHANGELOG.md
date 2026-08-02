@@ -36,3 +36,11 @@ Integration & Deployment
 - Melengkapi micro-prompt Phase 16–21 yang belum ada.
 - Memperbaiki referensi rusak dan menyelaraskan START.md dengan STATE.yml pada Phase 22.
 
+## 2026-08-02 - Panduan Eksekusi Vibe Code
+
+- Menambahkan panduan eksekusi per modul/task pada README root, dari implementasi sampai testing dan deployment.
+- Menulis ulang vibe code workflow, module execution template, dan master prompt agar mengikat ke contract artifact.
+- Mengganti urutan pembangunan service menjadi 12 increment konkret dengan migration, endpoint, dan prasyarat.
+- Menandai dokumen Phase 08 dan Phase 09 sebagai konseptual dan menunjuk contract artifact sebagai sumber kebenaran.
+- Menyelaraskan katalog endpoint Phase 09 dengan path yang benar-benar ada pada OpenAPI.
+

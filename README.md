@@ -82,6 +82,64 @@ Kontrak teknis yang wajib diikuti implementasi dan tidak boleh ditebak:
 - `docs/13-backend-foundation/009-backend-project-structure.md`
 - `docs/14-frontend-foundation/009-frontend-project-structure.md`
 
+## Cara Menjalankan Blueprint Ini ke Vibe Code
+
+Dokumentasi ini adalah dokumentasi hidup: dieksekusi **per modul/task**, bukan sekali jalan. Satu sesi AI = satu increment, dan increment berikutnya baru dimulai setelah test increment sebelumnya hijau.
+
+### Persiapan sekali saja
+
+1. Siapkan repository aplikasi terpisah (monorepo `apps/backend` NestJS + `apps/frontend` Next.js). Repository ini tetap berisi dokumentasi saja.
+2. Beri AI coding agent akses ke kedua repository, atau salin folder `contracts/`, `docs/`, `standards/`, `adr/` ke dalam repository aplikasi.
+3. Siapkan Docker Compose untuk PostgreSQL dan Redis sesuai `docs/12-project-foundation/004-docker-infrastructure-design.md`.
+
+### Siklus per task
+
+```
+Pilih task  →  Tempel konteks  →  Setujui rencana file  →  Implementasi
+                                                              ↓
+                       Deploy  ←   Review   ←   Test   ←   Commit/PR
+```
+
+| Langkah | Yang kamu lakukan | File rujukan |
+| --- | --- | --- |
+| 1. Pilih task | Ambil **satu** micro-prompt (MP) sesuai urutan increment | `docs/06-implementation-roadmap/008-core-service-development-order.md`, `prompts/index-by-phase.md` |
+| 2. Tempel konteks | Master prompt + satu MP tersebut | `docs/05-ai-development-blueprint/010-final-vibe-code-master-prompt.md` |
+| 3. Rencana file | Minta daftar file yang akan dibuat/diubah, periksa, baru setujui | `docs/05-ai-development-blueprint/007-module-execution-template.md` |
+| 4. Implementasi | Kode + migration + DTO mengikuti kontrak | `contracts/openapi/channelhub.v1.yaml`, `docs/15-database-implementation/010-postgresql-ddl-reference.md` |
+| 5. Test | Unit, integrasi, uji negatif tenant, contract test | `prompts/lifecycle/02-testing-increment.md`, `docs/22-security/005-security-testing-and-audit.md` |
+| 6. Review | Jalankan checklist sebelum merge | `checklists/code-review.md`, `checklists/security-review.md` |
+| 7. Deploy | Build image, migrasi, smoke test per environment | `prompts/lifecycle/03-deployment-increment.md`, `docs/21-integration-deployment/` |
+| 8. Catat | Perbarui status dan changelog | `.channelhub/STATE.yml`, `.channelhub/CHANGELOG.md` |
+
+### Urutan increment (ringkas)
+
+```
+1  Fondasi: config, database, observability, health
+2  Cross-cutting: guard, interceptor, exception filter, envelope
+3  Identity: user, role, permission, session
+4  Organization: tenant, membership, setting
+5  Property: property, room type, room
+6  Inventory & rate
+7  Reservation (transaksional, anti oversell)
+8  OTA: koneksi, mapping, sync job, webhook
+9  Subscription & billing
+10 Notification & platform (menu, audit, feature flag)
+11 Frontend: shell, auth, lalu feature mengikuti 5–10
+12 Integrasi & deployment
+```
+
+Rincian prasyarat, migration, dan endpoint tiap increment ada di `docs/06-implementation-roadmap/008-core-service-development-order.md`.
+
+### Aturan yang membuat hasilnya rapi
+
+- Satu task per sesi. Perintah "kerjakan semuanya" menghasilkan kode tebakan.
+- AI wajib membaca Contract Artifact sebelum menulis kode; jangan biarkan ia mengarang tabel atau endpoint.
+- Perubahan perilaku dimulai dari file kontrak, baru kode.
+- Increment tidak dianggap selesai sebelum test hijau dan checklist review terisi.
+- Keputusan arsitektur baru dihentikan dan diangkat menjadi ADR di `adr/`.
+
+Penjelasan lengkap alur ini ada di `docs/05-ai-development-blueprint/002-vibe-code-workflow.md`.
+
 ## Status
 
 Phase: 22 — Security (lihat `.channelhub/STATE.yml`)
