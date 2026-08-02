@@ -36,3 +36,11 @@ Integration & Deployment
 - Melengkapi micro-prompt Phase 16–21 yang belum ada.
 - Memperbaiki referensi rusak dan menyelaraskan START.md dengan STATE.yml pada Phase 22.
 
+## 2026-08-02 - Phase 22 Security Hardening
+
+- Menetapkan parameter konkret authentication hardening: TTL token, password policy, lockout, rate limit, dan alur rotasi refresh token.
+- Merinci penegakan isolasi tenant per layer beserta matriks uji negatif wajib.
+- Menetapkan skema enkripsi kredensial OTA (AES-256-GCM versioned) dan prosedur rotasi secret.
+- Menetapkan daftar aksi yang wajib diaudit dan gate rilis keamanan.
+- Menambahkan tingkat severity dan aksi containment cepat pada incident response runbook.
+
