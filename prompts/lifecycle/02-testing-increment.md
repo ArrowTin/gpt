@@ -21,7 +21,7 @@ Tambahkan atau verifikasi test plan + automated tests untuk slice yang sama (doc
 
 ## Validation
 
-- [checklists/testing-release.md](../checklists/testing-release.md)
+- [checklists/testing-release.md](../../checklists/testing-release.md)
 
 ## Output
 

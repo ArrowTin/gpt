@@ -28,10 +28,10 @@ Mapping resmi: setiap file di `docs/{phase}/` punya micro-prompt (`MP-NNN`) di `
 | 10 | docs/10-ai-agent-orchestration | [phase-10-ai-agent-orchestration.md](./phases/phase-10-ai-agent-orchestration.md) | 10 |
 | 11 | docs/11-autonomous-development-workflow | [phase-11-autonomous-workflow.md](./phases/phase-11-autonomous-workflow.md) | 8 |
 | 12 | docs/12-project-foundation | [phase-12-project-foundation.md](./phases/phase-12-project-foundation.md) | 8 |
-| 13 | docs/13-backend-foundation | [phase-13-backend-foundation.md](./phases/phase-13-backend-foundation.md) | 8 |
-| 14 | docs/14-frontend-foundation | [phase-14-frontend-foundation.md](./phases/phase-14-frontend-foundation.md) | 8 |
-| 15 | docs/15-database-implementation | [phase-15-database-implementation.md](./phases/phase-15-database-implementation.md) | 8 |
-| 16 | docs/16-api-contract | [phase-16-api-contract.md](./phases/phase-16-api-contract.md) | 8 |
+| 13 | docs/13-backend-foundation | [phase-13-backend-foundation.md](./phases/phase-13-backend-foundation.md) | 9 |
+| 14 | docs/14-frontend-foundation | [phase-14-frontend-foundation.md](./phases/phase-14-frontend-foundation.md) | 9 |
+| 15 | docs/15-database-implementation | [phase-15-database-implementation.md](./phases/phase-15-database-implementation.md) | 10 |
+| 16 | docs/16-api-contract | [phase-16-api-contract.md](./phases/phase-16-api-contract.md) | 10 |
 | 17 | docs/17-core-services | [phase-17-core-services.md](./phases/phase-17-core-services.md) | 8 |
 | 18 | docs/18-backend-implementation | [phase-18-backend-implementation.md](./phases/phase-18-backend-implementation.md) | 8 |
 | 19 | docs/19-backend-application | [phase-19-backend-application.md](./phases/phase-19-backend-application.md) | 8 |
@@ -45,6 +45,17 @@ Mapping resmi: setiap file di `docs/{phase}/` punya micro-prompt (`MP-NNN`) di `
 | --- | --- |
 | Blueprint repo | MP goal = sync/review/extend **documentation** only |
 | App repo | MP goal = implement **one** slice; cite same doc path as spec |
+
+## Machine-readable contract
+
+Spesifikasi teknis yang dipakai lintas fase:
+
+| Artefak | Dipakai oleh |
+| --- | --- |
+| [contracts/openapi/channelhub.v1.yaml](../contracts/openapi/channelhub.v1.yaml) | Phase 16, 19, 20 |
+| [docs/15-database-implementation/010-postgresql-ddl-reference.md](../docs/15-database-implementation/010-postgresql-ddl-reference.md) | Phase 15, 19 |
+| [docs/13-backend-foundation/009-backend-project-structure.md](../docs/13-backend-foundation/009-backend-project-structure.md) | Phase 18, 19 |
+| [docs/14-frontend-foundation/009-frontend-project-structure.md](../docs/14-frontend-foundation/009-frontend-project-structure.md) | Phase 20 |
 
 ## Cross-links
 

@@ -1,6 +1,5 @@
 # CHANNELHUB AI EXECUTION CONTRACT
 
-
 ===========================================================
 
 MISSION
@@ -8,9 +7,11 @@ MISSION
 ===========================================================
 
 Repository:
+
 ArrowTin/gpt
 
 Project:
+
 ChannelHub Enterprise Blueprint
 
 Repository adalah Single Source of Truth.
@@ -32,17 +33,17 @@ Baca README.md pada root repository.
 Baca file START.md ini.
 
 3.
-ANGGAP seluruh informasi pada START.md valid.
+Baca .channelhub/STATE.yml untuk fase aktif.
 
 4.
-JANGAN melakukan repository scan.
+Baca dokumen pada bagian REFERENCES di bawah.
 
 5.
-JANGAN melakukan directory listing.
+Jalankan SATU micro-prompt per sesi
+sesuai prompts/phases/phase-{fase}-*.md.
 
-6.
-JANGAN meminta context tambahan
-jika seluruh informasi di bawah tersedia.
+Jika AI tidak dapat membaca file selain README.md dan START.md,
+lihat bagian FAILSAFE.
 
 ===========================================================
 
@@ -70,7 +71,7 @@ AI DIBERIKAN KEWENANGAN UNTUK:
 
 SELAMA:
 
-- tidak mengubah arsitektur utama
+- tidak mengubah arsitektur utama tanpa ADR baru
 
 - mengikuti README
 
@@ -78,9 +79,9 @@ SELAMA:
 
 - mengikuti milestone aktif
 
-AI TIDAK PERLU blueprint tambahan.
-
-AI TIDAK PERLU meminta izin lagi.
+- tidak mengubah kontrak tanpa memperbarui
+  contracts/openapi/channelhub.v1.yaml dan
+  docs/15-database-implementation/010-postgresql-ddl-reference.md
 
 ===========================================================
 
@@ -110,6 +111,8 @@ Metadata Driven
 
 Microservice Ready
 
+Multi Tenant
+
 Backend:
 
 NestJS
@@ -138,15 +141,43 @@ CURRENT STATE
 
 Current Phase:
 
-21
+22
 
 Current Milestone:
 
-Integration & Deployment
+Security
 
 Status:
 
 RUNNING
+
+Sumber kebenaran status:
+
+.channelhub/STATE.yml
+
+===========================================================
+
+CONTRACT ARTIFACT
+
+===========================================================
+
+Lima dokumen berikut adalah kontrak teknis.
+
+Implementasi WAJIB mengikutinya
+dan tidak boleh menebak isi yang berbeda:
+
+contracts/openapi/channelhub.v1.yaml
+
+docs/15-database-implementation/009-canonical-erd.md
+
+docs/15-database-implementation/010-postgresql-ddl-reference.md
+
+docs/13-backend-foundation/009-backend-project-structure.md
+
+docs/14-frontend-foundation/009-frontend-project-structure.md
+
+Perubahan kontrak dilakukan pada file kontrak lebih dulu,
+baru kode mengikutinya.
 
 ===========================================================
 
@@ -154,128 +185,65 @@ REFERENCES
 
 ===========================================================
 
-Saat membuat Phase 21,
-gunakan referensi berikut:
+Peta seluruh dokumen:
+
+docs/README.md
+
+Registry prompt per fase:
+
+prompts/index-by-phase.md
+
+Referensi wajib saat implementasi:
 
 README.md
 
-docs/02-system-architecture/
+docs/02-product-architecture/
+
+docs/13-backend-foundation/
+
+docs/14-frontend-foundation/
+
+docs/15-database-implementation/
 
 docs/16-api-contract/
 
-docs/18-core-services/
+docs/17-core-services/
 
 docs/19-backend-application/
 
 docs/20-frontend-application/
 
-JANGAN mencari referensi lain.
+docs/21-integration-deployment/
+
+docs/22-security/
+
+adr/
+
+standards/
 
 ===========================================================
 
-DELIVERABLES
+DELIVERABLES PHASE 22
 
 ===========================================================
 
-AI WAJIB menghasilkan:
+001-security-baseline-platform.md
 
-001-frontend-backend-integration.md
+002-authentication-hardening.md
 
-002-docker-compose-production.md
+003-authorization-tenant-isolation.md
 
-003-ci-cd-pipeline.md
+004-secrets-and-credential-management.md
 
-004-environment-deployment.md
+005-security-testing-and-audit.md
 
-===========================================================
+006-incident-response-runbook.md
 
-SPECIFICATION
+Seluruh berkas berada pada docs/22-security/.
 
-===========================================================
+Micro-prompt per berkas:
 
-001
-
-Menjelaskan integrasi Frontend dan Backend.
-
-Minimal berisi:
-
-- Overview
-
-- Architecture
-
-- Authentication Flow
-
-- API Communication
-
-- Error Handling
-
-- Retry
-
-- Deployment Notes
-
-- Best Practice
-
------------------------------------------------------------
-
-002
-
-Blueprint Docker Production.
-
-Minimal:
-
-- Services
-
-- Networks
-
-- Volumes
-
-- Secrets
-
-- Reverse Proxy
-
-- Scaling
-
-- Healthcheck
-
------------------------------------------------------------
-
-003
-
-CI/CD.
-
-Minimal:
-
-- Workflow
-
-- Build
-
-- Test
-
-- Security Scan
-
-- Docker Build
-
-- Deploy
-
------------------------------------------------------------
-
-004
-
-Environment.
-
-Minimal:
-
-- Development
-
-- Staging
-
-- Production
-
-- Variables
-
-- Secrets
-
-- Monitoring
+prompts/phases/phase-22-security.md
 
 ===========================================================
 
@@ -291,7 +259,9 @@ Milestone dianggap selesai jika:
 
 ✓ struktur konsisten
 
-✓ cross reference benar
+✓ cross reference benar (tidak ada link rusak)
+
+✓ nama tabel, enum, endpoint konsisten dengan CONTRACT ARTIFACT
 
 ✓ README tidak dilanggar
 
@@ -323,19 +293,27 @@ Jika AI tidak dapat:
 
 - list directory
 
-- membaca file selain README
+- membaca file selain README dan START.md
 
 MAKA:
 
-Gunakan START.md sebagai
-working context.
+Gunakan START.md sebagai working context.
 
 JANGAN berhenti bekerja.
 
-JANGAN meminta context ulang.
+Kerjakan HANYA satu deliverable pada bagian
+DELIVERABLES PHASE 22.
 
-JANGAN meminta blueprint tambahan.
+Tandai asumsi yang dipakai pada bagian akhir dokumen
+yang dihasilkan agar dapat diverifikasi kemudian.
 
-Lanjutkan implementasi.
+CATATAN:
+
+Failsafe adalah kondisi darurat.
+
+Pada kondisi normal AI WAJIB membaca
+CONTRACT ARTIFACT sebelum menulis kode,
+karena skema database dan kontrak API
+TIDAK boleh ditebak.
 
 END

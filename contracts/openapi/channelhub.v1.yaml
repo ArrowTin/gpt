@@ -1,0 +1,1839 @@
+openapi: 3.1.0
+info:
+  title: ChannelHub Platform API
+  version: 1.0.0
+  description: |
+    Kontrak REST resmi ChannelHub v1. Sumber kebenaran endpoint, request, dan response.
+    Dokumen naratif: docs/16-api-contract/009-api-endpoint-specification.md
+    Model data: docs/15-database-implementation/009-canonical-erd.md
+servers:
+  - url: https://api.channelhub.example/api/v1
+    description: Production
+  - url: https://staging-api.channelhub.example/api/v1
+    description: Staging
+  - url: http://localhost:3000/api/v1
+    description: Development
+
+tags:
+  - name: Auth
+  - name: Users
+  - name: Organizations
+  - name: Roles
+  - name: Properties
+  - name: Inventory
+  - name: Rates
+  - name: Reservations
+  - name: Channels
+  - name: Subscriptions
+  - name: Billing
+  - name: Notifications
+  - name: Platform
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login dengan email dan password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password, minLength: 12 }
+                organizationId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Token diterbitkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/AuthTokens' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '423':
+          description: Akun terkunci akibat percobaan login berlebihan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Rotasi refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200':
+          description: Token baru
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/AuthTokens' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cabut session aktif
+      responses:
+        '204': { description: Session dicabut }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Profil, permission efektif, dan entitlement user aktif
+      responses:
+        '200':
+          description: Profil user
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/CurrentUser' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Daftar user pada organisasi aktif
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/UserStatus' }
+      responses:
+        '200':
+          description: Daftar user
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/User' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [Users]
+      summary: Undang user ke organisasi
+      parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserInviteRequest' }
+      responses:
+        '201':
+          description: User diundang
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/User' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /users/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/UserId'
+    get:
+      tags: [Users]
+      summary: Detail user
+      responses:
+        '200':
+          description: Detail user
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/User' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Users]
+      summary: Ubah user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName: { type: string, maxLength: 160 }
+                phone: { type: string, maxLength: 32 }
+                status: { $ref: '#/components/schemas/UserStatus' }
+                roleIds:
+                  type: array
+                  items: { type: string, format: uuid }
+      responses:
+        '200':
+          description: User diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/User' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /organizations:
+    get:
+      tags: [Organizations]
+      summary: Daftar organisasi milik user (atau seluruh tenant untuk super admin)
+      responses:
+        '200':
+          description: Daftar organisasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Organization' }
+    post:
+      tags: [Organizations]
+      summary: Buat organisasi baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, slug]
+              properties:
+                name: { type: string, maxLength: 160 }
+                slug: { type: string, pattern: '^[a-z0-9-]{3,80}$' }
+                countryCode: { type: string, minLength: 2, maxLength: 2 }
+                timezone: { type: string, default: Asia/Jakarta }
+                defaultCurrency: { type: string, minLength: 3, maxLength: 3, default: IDR }
+      responses:
+        '201':
+          description: Organisasi dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Organization' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /organizations/{organizationId}:
+    parameters: [{ $ref: '#/components/parameters/OrganizationId' }]
+    get:
+      tags: [Organizations]
+      summary: Detail organisasi
+      responses:
+        '200':
+          description: Detail organisasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Organization' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Organizations]
+      summary: Ubah profil dan branding organisasi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                status: { $ref: '#/components/schemas/OrganizationStatus' }
+                branding: { type: object, additionalProperties: true }
+      responses:
+        '200':
+          description: Organisasi diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Organization' }
+
+  /roles:
+    get:
+      tags: [Roles]
+      summary: Daftar role beserta permission
+      parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+      responses:
+        '200':
+          description: Daftar role
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Role' }
+    post:
+      tags: [Roles]
+      summary: Buat role custom
+      parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name, permissionCodes]
+              properties:
+                code: { type: string, maxLength: 60 }
+                name: { type: string, maxLength: 120 }
+                level: { type: integer, minimum: 1, maximum: 5 }
+                permissionCodes:
+                  type: array
+                  items: { type: string }
+      responses:
+        '201':
+          description: Role dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Role' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /permissions:
+    get:
+      tags: [Roles]
+      summary: Katalog permission platform
+      responses:
+        '200':
+          description: Daftar permission
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Permission' }
+
+  /properties:
+    parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+    get:
+      tags: [Properties]
+      summary: Daftar properti
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/PropertyStatus' }
+      responses:
+        '200':
+          description: Daftar properti
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Property' }
+    post:
+      tags: [Properties]
+      summary: Buat properti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PropertyRequest' }
+      responses:
+        '201':
+          description: Properti dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Property' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /properties/{propertyId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/PropertyId'
+    get:
+      tags: [Properties]
+      summary: Detail properti
+      responses:
+        '200':
+          description: Detail properti
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Property' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Properties]
+      summary: Ubah properti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PropertyRequest' }
+      responses:
+        '200':
+          description: Properti diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Property' }
+    delete:
+      tags: [Properties]
+      summary: Arsipkan properti (soft delete)
+      responses:
+        '204': { description: Properti diarsipkan }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /properties/{propertyId}/room-types:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/PropertyId'
+    get:
+      tags: [Properties]
+      summary: Daftar room type
+      responses:
+        '200':
+          description: Daftar room type
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/RoomType' }
+    post:
+      tags: [Properties]
+      summary: Buat room type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RoomTypeRequest' }
+      responses:
+        '201':
+          description: Room type dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/RoomType' }
+
+  /properties/{propertyId}/inventory:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/PropertyId'
+    get:
+      tags: [Inventory]
+      summary: Kalender inventory per room type
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: roomTypeId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Kalender inventory
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/InventoryDay' }
+    put:
+      tags: [Inventory]
+      summary: Perbarui inventory secara bulk (idempoten)
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items: { $ref: '#/components/schemas/InventoryUpdateItem' }
+      responses:
+        '200':
+          description: Inventory diperbarui dan sync job dijadwalkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/BulkUpdateResult' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /properties/{propertyId}/rates:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/PropertyId'
+    get:
+      tags: [Rates]
+      summary: Kalender harga per rate plan
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: ratePlanId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Kalender harga
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/RateDay' }
+    put:
+      tags: [Rates]
+      summary: Perbarui harga secara bulk (idempoten)
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items: { $ref: '#/components/schemas/RateUpdateItem' }
+      responses:
+        '200':
+          description: Harga diperbarui dan sync job dijadwalkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/BulkUpdateResult' }
+
+  /availability:
+    get:
+      tags: [Inventory]
+      summary: Cek ketersediaan yang dapat dijual
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - name: propertyId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: checkIn
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: checkOut
+          in: query
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Ketersediaan per room type
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/AvailabilityItem' }
+
+  /reservations:
+    parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+    get:
+      tags: [Reservations]
+      summary: Daftar reservasi
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: propertyId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/ReservationStatus' }
+        - name: checkInFrom
+          in: query
+          schema: { type: string, format: date }
+        - name: checkInTo
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Daftar reservasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Reservation' }
+    post:
+      tags: [Reservations]
+      summary: Buat reservasi (mengurangi inventory dalam satu transaksi)
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReservationRequest' }
+      responses:
+        '201':
+          description: Reservasi dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Reservation' }
+        '409':
+          description: Inventory tidak mencukupi atau konflik versi
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /reservations/{reservationId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/ReservationId'
+    get:
+      tags: [Reservations]
+      summary: Detail reservasi
+      responses:
+        '200':
+          description: Detail reservasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Reservation' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /reservations/{reservationId}/status:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/ReservationId'
+    patch:
+      tags: [Reservations]
+      summary: Ubah status reservasi sesuai lifecycle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { $ref: '#/components/schemas/ReservationStatus' }
+                reason: { type: string, maxLength: 500 }
+      responses:
+        '200':
+          description: Status diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Reservation' }
+        '409':
+          description: Transisi status tidak valid
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /reservations/{reservationId}/events:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/ReservationId'
+    get:
+      tags: [Reservations]
+      summary: Riwayat lifecycle reservasi
+      responses:
+        '200':
+          description: Daftar event
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/ReservationEvent' }
+
+  /channels:
+    get:
+      tags: [Channels]
+      summary: Katalog channel OTA yang didukung platform
+      responses:
+        '200':
+          description: Daftar channel
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/OtaChannel' }
+
+  /channel-connections:
+    parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+    get:
+      tags: [Channels]
+      summary: Daftar koneksi channel milik tenant
+      parameters:
+        - name: propertyId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Daftar koneksi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/ChannelConnection' }
+    post:
+      tags: [Channels]
+      summary: Hubungkan property ke channel OTA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [propertyId, otaChannelId, credentials]
+              properties:
+                propertyId: { type: string, format: uuid }
+                otaChannelId: { type: string, format: uuid }
+                credentials:
+                  type: object
+                  description: Disimpan terenkripsi, tidak pernah dikembalikan API
+                  additionalProperties: true
+                settings: { type: object, additionalProperties: true }
+      responses:
+        '201':
+          description: Koneksi dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/ChannelConnection' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /channel-connections/{connectionId}/mappings:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/ConnectionId'
+    put:
+      tags: [Channels]
+      summary: Set mapping room type dan rate plan ke id eksternal OTA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mappings]
+              properties:
+                mappings:
+                  type: array
+                  items: { $ref: '#/components/schemas/ChannelMapping' }
+      responses:
+        '200':
+          description: Mapping disimpan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/ChannelMapping' }
+
+  /channel-connections/{connectionId}/sync:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - $ref: '#/components/parameters/ConnectionId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+    post:
+      tags: [Channels]
+      summary: Jadwalkan sinkronisasi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobType]
+              properties:
+                jobType:
+                  type: string
+                  enum: [INVENTORY, RATE, RESERVATION, FULL]
+                from: { type: string, format: date }
+                to: { type: string, format: date }
+      responses:
+        '202':
+          description: Sync job diterima
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/SyncJob' }
+        '402':
+          description: Credit wallet tidak mencukupi
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /sync-jobs:
+    get:
+      tags: [Channels]
+      summary: Riwayat sync job
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/SyncStatus' }
+      responses:
+        '200':
+          description: Daftar sync job
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/SyncJob' }
+
+  /webhooks/ota/{channelCode}:
+    post:
+      tags: [Channels]
+      summary: Terima webhook OTA
+      description: |
+        Endpoint publik yang diverifikasi lewat signature HMAC pada header `X-Signature`.
+        Payload disimpan pada `webhook_events` dan diproses asinkron; duplikat `X-Event-Id` diabaikan.
+      security: []
+      parameters:
+        - name: channelCode
+          in: path
+          required: true
+          schema: { type: string }
+        - name: X-Signature
+          in: header
+          required: true
+          schema: { type: string }
+        - name: X-Event-Id
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        '202': { description: Event diterima untuk diproses }
+        '401':
+          description: Signature tidak valid
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /subscription-plans:
+    get:
+      tags: [Subscriptions]
+      summary: Katalog plan aktif
+      security: []
+      responses:
+        '200':
+          description: Daftar plan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/SubscriptionPlan' }
+
+  /subscriptions/current:
+    parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+    get:
+      tags: [Subscriptions]
+      summary: Subscription dan entitlement organisasi aktif
+      responses:
+        '200':
+          description: Subscription aktif
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Subscription' }
+    patch:
+      tags: [Subscriptions]
+      summary: Upgrade atau downgrade plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subscriptionPlanId]
+              properties:
+                subscriptionPlanId: { type: string, format: uuid }
+                cancelAtPeriodEnd: { type: boolean }
+      responses:
+        '200':
+          description: Subscription diperbarui, invoice prorata diterbitkan bila perlu
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Subscription' }
+
+  /invoices:
+    get:
+      tags: [Billing]
+      summary: Daftar invoice
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/InvoiceStatus' }
+      responses:
+        '200':
+          description: Daftar invoice
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Invoice' }
+
+  /invoices/{invoiceId}:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - name: invoiceId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [Billing]
+      summary: Detail invoice beserta item
+      responses:
+        '200':
+          description: Detail invoice
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/Invoice' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /wallet:
+    get:
+      tags: [Billing]
+      summary: Saldo credit wallet organisasi
+      parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+      responses:
+        '200':
+          description: Saldo wallet
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data: { $ref: '#/components/schemas/CreditWallet' }
+
+  /wallet/transactions:
+    get:
+      tags: [Billing]
+      summary: Riwayat pemakaian credit
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Daftar transaksi credit
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/CreditTransaction' }
+
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: Notifikasi untuk user aktif
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/NotificationStatus' }
+      responses:
+        '200':
+          description: Daftar notifikasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Notification' }
+
+  /notifications/{notificationId}/read:
+    parameters:
+      - $ref: '#/components/parameters/TenantHeader'
+      - name: notificationId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    post:
+      tags: [Notifications]
+      summary: Tandai notifikasi sudah dibaca
+      responses:
+        '204': { description: Ditandai terbaca }
+
+  /menus:
+    get:
+      tags: [Platform]
+      summary: Menu dinamis sesuai permission dan entitlement user
+      parameters: [{ $ref: '#/components/parameters/TenantHeader' }]
+      responses:
+        '200':
+          description: Struktur menu
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/MenuItem' }
+
+  /audit-logs:
+    get:
+      tags: [Platform]
+      summary: Audit log organisasi
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: resourceType
+          in: query
+          schema: { type: string }
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+      responses:
+        '200':
+          description: Daftar audit log
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedEnvelope'
+                  - properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/AuditLog' }
+
+  /health:
+    get:
+      tags: [Platform]
+      summary: Liveness dan readiness probe
+      security: []
+      responses:
+        '200':
+          description: Status service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [ok, degraded] }
+                  dependencies:
+                    type: object
+                    additionalProperties: { type: string }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    TenantHeader:
+      name: X-Tenant-Id
+      in: header
+      required: true
+      description: Harus cocok dengan klaim tenant pada token kecuali scope super admin
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, maxLength: 120 }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    PageSize:
+      name: pageSize
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    OrganizationId:
+      name: organizationId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    PropertyId:
+      name: propertyId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    ReservationId:
+      name: reservationId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    ConnectionId:
+      name: connectionId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Unauthorized:
+      description: Token tidak valid atau kedaluwarsa
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    Forbidden:
+      description: Permission atau entitlement tidak mencukupi
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    NotFound:
+      description: Resource tidak ditemukan pada tenant aktif
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    Conflict:
+      description: Konflik state atau constraint unik
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    ValidationError:
+      description: Payload gagal validasi
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    RateLimited:
+      description: Melebihi rate limit
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  schemas:
+    SuccessEnvelope:
+      type: object
+      required: [success, data, metadata]
+      properties:
+        success: { type: boolean, const: true }
+        data: {}
+        message: { type: string, nullable: true }
+        error: { type: 'null' }
+        metadata: { $ref: '#/components/schemas/Metadata' }
+
+    PaginatedEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            metadata: { $ref: '#/components/schemas/PaginatedMetadata' }
+
+    ErrorEnvelope:
+      type: object
+      required: [success, error, metadata]
+      properties:
+        success: { type: boolean, const: false }
+        data: { type: 'null' }
+        message: { type: string }
+        error: { $ref: '#/components/schemas/ApiError' }
+        metadata: { $ref: '#/components/schemas/Metadata' }
+
+    ApiError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Kode pada docs/16-api-contract/010-error-code-catalog.md
+          examples: [RESERVATION_INVENTORY_UNAVAILABLE]
+        message: { type: string }
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              rule: { type: string }
+              message: { type: string }
+
+    Metadata:
+      type: object
+      required: [requestId, timestamp]
+      properties:
+        requestId: { type: string, format: uuid }
+        correlationId: { type: string, format: uuid }
+        timestamp: { type: string, format: date-time }
+
+    PaginatedMetadata:
+      allOf:
+        - $ref: '#/components/schemas/Metadata'
+        - type: object
+          required: [page, pageSize, total]
+          properties:
+            page: { type: integer }
+            pageSize: { type: integer }
+            total: { type: integer }
+            totalPages: { type: integer }
+
+    AuthTokens:
+      type: object
+      required: [accessToken, refreshToken, expiresIn]
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        tokenType: { type: string, const: Bearer }
+        expiresIn: { type: integer, description: Detik hingga access token kedaluwarsa }
+
+    UserStatus:
+      type: string
+      enum: [PENDING, ACTIVE, SUSPENDED, DEACTIVATED]
+    OrganizationStatus:
+      type: string
+      enum: [TRIAL, ACTIVE, SUSPENDED, CLOSED]
+    PropertyStatus:
+      type: string
+      enum: [DRAFT, ACTIVE, INACTIVE, ARCHIVED]
+    ReservationStatus:
+      type: string
+      enum: [PENDING, CONFIRMED, CHECKED_IN, CHECKED_OUT, CANCELLED, NO_SHOW]
+    SubscriptionStatus:
+      type: string
+      enum: [TRIAL, ACTIVE, EXPIRING, EXPIRED, SUSPENDED, CANCELLED]
+    InvoiceStatus:
+      type: string
+      enum: [DRAFT, ISSUED, PAID, OVERDUE, VOID]
+    SyncStatus:
+      type: string
+      enum: [QUEUED, RUNNING, SUCCEEDED, FAILED, RETRYING]
+    ConnectionStatus:
+      type: string
+      enum: [DISCONNECTED, CONNECTED, ERROR, REVOKED]
+    NotificationStatus:
+      type: string
+      enum: [QUEUED, SENT, FAILED, READ]
+
+    User:
+      type: object
+      required: [id, email, fullName, status]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        fullName: { type: string }
+        phone: { type: string, nullable: true }
+        status: { $ref: '#/components/schemas/UserStatus' }
+        roles:
+          type: array
+          items: { $ref: '#/components/schemas/Role' }
+        lastLoginAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+    CurrentUser:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            organizations:
+              type: array
+              items: { $ref: '#/components/schemas/Organization' }
+            activeOrganizationId: { type: string, format: uuid }
+            permissions:
+              type: array
+              items: { type: string }
+            features:
+              type: array
+              items: { type: string }
+            isSuperAdmin: { type: boolean }
+
+    UserInviteRequest:
+      type: object
+      required: [email, fullName, roleIds]
+      properties:
+        email: { type: string, format: email }
+        fullName: { type: string, maxLength: 160 }
+        roleIds:
+          type: array
+          minItems: 1
+          items: { type: string, format: uuid }
+
+    Organization:
+      type: object
+      required: [id, name, slug, status]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        status: { $ref: '#/components/schemas/OrganizationStatus' }
+        timezone: { type: string }
+        defaultCurrency: { type: string }
+        branding: { type: object, additionalProperties: true }
+        createdAt: { type: string, format: date-time }
+
+    Permission:
+      type: object
+      required: [code, resource, action]
+      properties:
+        code: { type: string }
+        resource: { type: string }
+        action: { type: string }
+        description: { type: string, nullable: true }
+
+    Role:
+      type: object
+      required: [id, code, name, level]
+      properties:
+        id: { type: string, format: uuid }
+        code: { type: string }
+        name: { type: string }
+        level: { type: integer }
+        isSystem: { type: boolean }
+        permissionCodes:
+          type: array
+          items: { type: string }
+
+    Property:
+      type: object
+      required: [id, code, name, status]
+      properties:
+        id: { type: string, format: uuid }
+        organizationId: { type: string, format: uuid }
+        code: { type: string }
+        name: { type: string }
+        status: { $ref: '#/components/schemas/PropertyStatus' }
+        addressLine: { type: string, nullable: true }
+        city: { type: string, nullable: true }
+        countryCode: { type: string, nullable: true }
+        timezone: { type: string }
+        currency: { type: string }
+        checkInTime: { type: string, examples: ['14:00'] }
+        checkOutTime: { type: string, examples: ['12:00'] }
+        facilities:
+          type: array
+          items: { type: string }
+
+    PropertyRequest:
+      type: object
+      required: [code, name]
+      properties:
+        code: { type: string, maxLength: 40 }
+        name: { type: string, maxLength: 160 }
+        status: { $ref: '#/components/schemas/PropertyStatus' }
+        addressLine: { type: string }
+        city: { type: string }
+        countryCode: { type: string, minLength: 2, maxLength: 2 }
+        timezone: { type: string }
+        currency: { type: string, minLength: 3, maxLength: 3 }
+        checkInTime: { type: string }
+        checkOutTime: { type: string }
+        facilities:
+          type: array
+          items: { type: string }
+
+    RoomType:
+      type: object
+      required: [id, code, name, maxOccupancy, baseRate, totalRooms]
+      properties:
+        id: { type: string, format: uuid }
+        propertyId: { type: string, format: uuid }
+        code: { type: string }
+        name: { type: string }
+        maxOccupancy: { type: integer, minimum: 1 }
+        baseRate: { type: number, format: double, minimum: 0 }
+        currency: { type: string }
+        totalRooms: { type: integer, minimum: 0 }
+
+    RoomTypeRequest:
+      type: object
+      required: [code, name, maxOccupancy, baseRate, totalRooms]
+      properties:
+        code: { type: string, maxLength: 40 }
+        name: { type: string, maxLength: 120 }
+        maxOccupancy: { type: integer, minimum: 1 }
+        baseRate: { type: number, minimum: 0 }
+        currency: { type: string, minLength: 3, maxLength: 3 }
+        totalRooms: { type: integer, minimum: 0 }
+
+    InventoryDay:
+      type: object
+      required: [roomTypeId, stayDate, totalUnits, bookedUnits, blockedUnits, availableUnits]
+      properties:
+        roomTypeId: { type: string, format: uuid }
+        stayDate: { type: string, format: date }
+        totalUnits: { type: integer }
+        bookedUnits: { type: integer }
+        blockedUnits: { type: integer }
+        availableUnits: { type: integer }
+        version: { type: integer }
+
+    InventoryUpdateItem:
+      type: object
+      required: [roomTypeId, stayDate, totalUnits]
+      properties:
+        roomTypeId: { type: string, format: uuid }
+        stayDate: { type: string, format: date }
+        totalUnits: { type: integer, minimum: 0 }
+        blockedUnits: { type: integer, minimum: 0 }
+        version: { type: integer, description: Versi terakhir yang dibaca client }
+
+    RateDay:
+      type: object
+      required: [ratePlanId, stayDate, price, closed]
+      properties:
+        ratePlanId: { type: string, format: uuid }
+        stayDate: { type: string, format: date }
+        price: { type: number, format: double }
+        closed: { type: boolean }
+
+    RateUpdateItem:
+      type: object
+      required: [ratePlanId, stayDate, price]
+      properties:
+        ratePlanId: { type: string, format: uuid }
+        stayDate: { type: string, format: date }
+        price: { type: number, minimum: 0 }
+        closed: { type: boolean }
+
+    BulkUpdateResult:
+      type: object
+      required: [updated, syncJobIds]
+      properties:
+        updated: { type: integer }
+        skipped: { type: integer }
+        syncJobIds:
+          type: array
+          items: { type: string, format: uuid }
+
+    AvailabilityItem:
+      type: object
+      required: [roomTypeId, availableUnits, totalPrice]
+      properties:
+        roomTypeId: { type: string, format: uuid }
+        roomTypeName: { type: string }
+        availableUnits: { type: integer }
+        ratePlanId: { type: string, format: uuid, nullable: true }
+        totalPrice: { type: number, format: double }
+        currency: { type: string }
+
+    Guest:
+      type: object
+      required: [fullName]
+      properties:
+        id: { type: string, format: uuid }
+        fullName: { type: string, maxLength: 160 }
+        email: { type: string, format: email, nullable: true }
+        phone: { type: string, nullable: true }
+        countryCode: { type: string, nullable: true }
+
+    ReservationRoom:
+      type: object
+      required: [roomTypeId, quantity, nightlyRate, subtotal]
+      properties:
+        id: { type: string, format: uuid }
+        roomTypeId: { type: string, format: uuid }
+        ratePlanId: { type: string, format: uuid, nullable: true }
+        roomId: { type: string, format: uuid, nullable: true }
+        quantity: { type: integer, minimum: 1 }
+        nightlyRate: { type: number, format: double }
+        subtotal: { type: number, format: double }
+
+    Reservation:
+      type: object
+      required: [id, reservationCode, status, checkIn, checkOut, totalAmount]
+      properties:
+        id: { type: string, format: uuid }
+        organizationId: { type: string, format: uuid }
+        propertyId: { type: string, format: uuid }
+        reservationCode: { type: string }
+        externalReference: { type: string, nullable: true }
+        status: { $ref: '#/components/schemas/ReservationStatus' }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        adults: { type: integer }
+        children: { type: integer }
+        totalAmount: { type: number, format: double }
+        currency: { type: string }
+        guest: { $ref: '#/components/schemas/Guest' }
+        rooms:
+          type: array
+          items: { $ref: '#/components/schemas/ReservationRoom' }
+        createdAt: { type: string, format: date-time }
+
+    ReservationRequest:
+      type: object
+      required: [propertyId, guest, checkIn, checkOut, rooms]
+      properties:
+        propertyId: { type: string, format: uuid }
+        guest: { $ref: '#/components/schemas/Guest' }
+        bookingSourceCode: { type: string }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        adults: { type: integer, minimum: 1, default: 1 }
+        children: { type: integer, minimum: 0, default: 0 }
+        notes: { type: string, maxLength: 1000 }
+        rooms:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [roomTypeId, quantity]
+            properties:
+              roomTypeId: { type: string, format: uuid }
+              ratePlanId: { type: string, format: uuid }
+              quantity: { type: integer, minimum: 1 }
+
+    ReservationEvent:
+      type: object
+      required: [id, eventType, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        eventType:
+          type: string
+          examples: [ReservationCreated, ReservationUpdated, ReservationCancelled]
+        previousStatus: { $ref: '#/components/schemas/ReservationStatus' }
+        newStatus: { $ref: '#/components/schemas/ReservationStatus' }
+        actorUserId: { type: string, format: uuid, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+    OtaChannel:
+      type: object
+      required: [id, code, name]
+      properties:
+        id: { type: string, format: uuid }
+        code: { type: string }
+        name: { type: string }
+        capabilities: { type: object, additionalProperties: true }
+        isActive: { type: boolean }
+
+    ChannelConnection:
+      type: object
+      required: [id, propertyId, otaChannelId, status]
+      properties:
+        id: { type: string, format: uuid }
+        propertyId: { type: string, format: uuid }
+        otaChannelId: { type: string, format: uuid }
+        status: { $ref: '#/components/schemas/ConnectionStatus' }
+        settings: { type: object, additionalProperties: true }
+        lastSyncAt: { type: string, format: date-time, nullable: true }
+        lastError: { type: string, nullable: true }
+
+    ChannelMapping:
+      type: object
+      required: [roomTypeId, externalRoomId]
+      properties:
+        id: { type: string, format: uuid }
+        roomTypeId: { type: string, format: uuid }
+        ratePlanId: { type: string, format: uuid, nullable: true }
+        externalRoomId: { type: string }
+        externalRatePlanId: { type: string, nullable: true }
+
+    SyncJob:
+      type: object
+      required: [id, jobType, status]
+      properties:
+        id: { type: string, format: uuid }
+        channelConnectionId: { type: string, format: uuid }
+        jobType: { type: string, enum: [INVENTORY, RATE, RESERVATION, FULL] }
+        status: { $ref: '#/components/schemas/SyncStatus' }
+        attempt: { type: integer }
+        maxAttempt: { type: integer }
+        scheduledAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time, nullable: true }
+        errorCode: { type: string, nullable: true }
+
+    SubscriptionPlan:
+      type: object
+      required: [id, code, name, price, billingCycle]
+      properties:
+        id: { type: string, format: uuid }
+        code: { type: string }
+        name: { type: string }
+        price: { type: number, format: double }
+        currency: { type: string }
+        billingCycle: { type: string, enum: [MONTHLY, YEARLY, CUSTOM] }
+        features:
+          type: array
+          items: { type: string }
+        limits: { type: object, additionalProperties: { type: integer } }
+
+    FeatureEntitlement:
+      type: object
+      required: [featureCode, isEnabled]
+      properties:
+        featureCode: { type: string }
+        isEnabled: { type: boolean }
+        quotaLimit: { type: integer, nullable: true }
+        quotaUsed: { type: integer }
+
+    Subscription:
+      type: object
+      required: [id, status, currentPeriodEnd]
+      properties:
+        id: { type: string, format: uuid }
+        plan: { $ref: '#/components/schemas/SubscriptionPlan' }
+        status: { $ref: '#/components/schemas/SubscriptionStatus' }
+        trialEndsAt: { type: string, format: date-time, nullable: true }
+        currentPeriodStart: { type: string, format: date-time }
+        currentPeriodEnd: { type: string, format: date-time }
+        cancelAtPeriodEnd: { type: boolean }
+        entitlements:
+          type: array
+          items: { $ref: '#/components/schemas/FeatureEntitlement' }
+
+    InvoiceItem:
+      type: object
+      required: [description, quantity, unitPrice, amount]
+      properties:
+        description: { type: string }
+        quantity: { type: number }
+        unitPrice: { type: number, format: double }
+        amount: { type: number, format: double }
+
+    Invoice:
+      type: object
+      required: [id, invoiceNumber, status, totalAmount]
+      properties:
+        id: { type: string, format: uuid }
+        invoiceNumber: { type: string }
+        status: { $ref: '#/components/schemas/InvoiceStatus' }
+        subtotal: { type: number, format: double }
+        taxAmount: { type: number, format: double }
+        totalAmount: { type: number, format: double }
+        currency: { type: string }
+        issuedAt: { type: string, format: date-time, nullable: true }
+        dueAt: { type: string, format: date-time, nullable: true }
+        paidAt: { type: string, format: date-time, nullable: true }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/InvoiceItem' }
+
+    CreditWallet:
+      type: object
+      required: [balance]
+      properties:
+        balance: { type: integer, format: int64 }
+        lowThreshold: { type: integer, format: int64 }
+        updatedAt: { type: string, format: date-time }
+
+    CreditTransaction:
+      type: object
+      required: [id, delta, reason, balanceAfter, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        delta: { type: integer, format: int64 }
+        reason: { type: string }
+        referenceType: { type: string, nullable: true }
+        referenceId: { type: string, format: uuid, nullable: true }
+        balanceAfter: { type: integer, format: int64 }
+        createdAt: { type: string, format: date-time }
+
+    Notification:
+      type: object
+      required: [id, channel, status, title, body]
+      properties:
+        id: { type: string, format: uuid }
+        channel: { type: string, enum: [EMAIL, PUSH, IN_APP, WEBHOOK] }
+        status: { $ref: '#/components/schemas/NotificationStatus' }
+        title: { type: string }
+        body: { type: string }
+        payload: { type: object, additionalProperties: true }
+        createdAt: { type: string, format: date-time }
+        readAt: { type: string, format: date-time, nullable: true }
+
+    MenuItem:
+      type: object
+      required: [code, label]
+      properties:
+        code: { type: string }
+        label: { type: string }
+        path: { type: string, nullable: true }
+        icon: { type: string, nullable: true }
+        sortOrder: { type: integer }
+        children:
+          type: array
+          items: { $ref: '#/components/schemas/MenuItem' }
+
+    AuditLog:
+      type: object
+      required: [id, action, resourceType, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        actorUserId: { type: string, format: uuid, nullable: true }
+        action: { type: string }
+        resourceType: { type: string }
+        resourceId: { type: string, format: uuid, nullable: true }
+        previousValue: { type: object, additionalProperties: true, nullable: true }
+        newValue: { type: object, additionalProperties: true, nullable: true }
+        createdAt: { type: string, format: date-time }

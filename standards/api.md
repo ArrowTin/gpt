@@ -6,6 +6,9 @@ Ringkasan wajib untuk desain dan review API ChannelHub.
 
 ## Rules
 
+- **Kontrak mesin (sumber kebenaran):** [contracts/openapi/channelhub.v1.yaml](../contracts/openapi/channelhub.v1.yaml)
+- Katalog endpoint: [docs/16-api-contract/009-api-endpoint-specification.md](../docs/16-api-contract/009-api-endpoint-specification.md)
+- Kode error: [docs/16-api-contract/010-error-code-catalog.md](../docs/16-api-contract/010-error-code-catalog.md)
 - REST + envelope response: [docs/16-api-contract/002-api-response-format.md](../docs/16-api-contract/002-api-response-format.md)
 - Auth & tenant: [docs/16-api-contract/005-api-authentication-standard.md](../docs/16-api-contract/005-api-authentication-standard.md)
 - Versioning: [docs/16-api-contract/007-api-versioning-strategy.md](../docs/16-api-contract/007-api-versioning-strategy.md)

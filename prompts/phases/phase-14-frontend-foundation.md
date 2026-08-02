@@ -16,5 +16,6 @@
 | MP-006 | docs/14-frontend-foundation/006-frontend-authentication-flow.md | diagrams/004 | Auth UI |
 | MP-007 | docs/14-frontend-foundation/007-frontend-routing-standard.md | Routes | Route group |
 | MP-008 | docs/14-frontend-foundation/008-frontend-performance-standard.md | Perf budget | Optimize slice |
+| MP-009 | docs/14-frontend-foundation/009-frontend-project-structure.md | Jaga struktur folder & peta route↔endpoint | Scaffold satu feature sesuai struktur |
 
 **Validation:** code-review · development-ready
