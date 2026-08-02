@@ -79,3 +79,62 @@ Pekerjaan dianggap selesai jika:
 - CI/CD mencakup workflow, build, test, security scan, docker build, dan deploy.
 - Environment deployment mencakup development, staging, production, variables, secrets, dan monitoring.
 - Tidak ada secret nyata dalam repository.
+
+## Documentation Consistency Checklist
+
+Sebelum menghasilkan output, pastikan jawaban konsisten dengan prinsip berikut:
+
+- Business First dari foundation dan business blueprint.
+- Configuration Driven dan Metadata Driven untuk menu, workflow, role, subscription, dan connector.
+- Domain Driven Design untuk ownership service dan database.
+- API First untuk seluruh komunikasi frontend-backend.
+- Event Driven untuk sync, notification, audit, dan background process.
+- Observability First untuk log, metric, trace, healthcheck, dan audit trail.
+- Security by Design untuk authentication, authorization, secret, tenant isolation, dan rate limit.
+
+## Required Deliverables For Phase 21 Execution
+
+Jika prompt ini dipakai untuk implementasi kode, AI wajib membuat atau memperbarui artefak berikut sesuai kebutuhan repository:
+
+1. API client frontend dengan interceptor token, tenant, correlation id, dan error normalization.
+2. Backend health/readiness endpoint untuk database, Redis, queue, dan dependency eksternal penting.
+3. Docker Compose production file atau template tanpa secret nyata.
+4. Environment template untuk development, staging, dan production.
+5. CI/CD workflow dengan test, scan, build, docker publish, deploy, dan post-deploy smoke test.
+6. Dokumentasi rollback dan release note.
+
+## Prompt Output Contract
+
+Gunakan format output berikut:
+
+```markdown
+## Context Read
+- ...
+
+## Plan
+- ...
+
+## Changes
+- ...
+
+## Validation
+- ...
+
+## Security Review
+- ...
+
+## Deployment Notes
+- ...
+
+## Next Step
+- ...
+```
+
+## Stop Condition
+
+Berhenti hanya jika:
+
+- Semua acceptance criteria terpenuhi.
+- Semua test/check yang relevan sudah dijalankan atau dijelaskan keterbatasannya.
+- Tidak ada secret nyata yang masuk repository.
+- State, changelog, dan dokumentasi terkait sudah diperbarui.

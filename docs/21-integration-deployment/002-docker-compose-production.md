@@ -90,3 +90,66 @@ Healthcheck minimum:
 - Redis: `redis-cli ping`.
 
 Container dianggap ready hanya jika dependency wajib tersedia. Liveness tidak boleh terlalu agresif agar tidak membuat restart loop saat migration atau cold start.
+
+## Compose File Principle
+
+File Compose production harus diperlakukan sebagai deployment contract, bukan tempat menyimpan konfigurasi rahasia. Nilai sensitif wajib berasal dari secret manager, protected environment variable, atau file secret yang tidak masuk Git.
+
+## Service Dependency Order
+
+Urutan startup logis:
+
+1. PostgreSQL.
+2. Redis.
+3. API gateway/backend.
+4. Worker.
+5. Frontend.
+6. Reverse proxy.
+7. Observability collector.
+
+`depends_on` tidak boleh dianggap cukup untuk readiness. Setiap service tetap wajib melakukan retry koneksi dependency dengan backoff.
+
+## Production Hardening
+
+- Semua container aplikasi berjalan sebagai non-root user.
+- Image menggunakan tag immutable.
+- Container hanya membuka port yang diperlukan.
+- Restart policy disesuaikan dengan jenis workload.
+- Resource limit dan reservation ditentukan untuk mencegah noisy neighbor.
+- Log driver diarahkan ke collector atau rotasi lokal yang terkontrol.
+- Backup volume database diuji melalui restore drill.
+
+## Example Topology
+
+```text
+Internet
+  |
+  v
+reverse-proxy [public, app]
+  |
+  +--> frontend [app]
+  |
+  +--> api-gateway [app, data]
+          |
+          +--> postgres [data]
+          +--> redis [data]
+          +--> worker [data]
+```
+
+## Operational Runbook
+
+- Jika backend unhealthy, cek database, Redis, migration status, dan secret injection.
+- Jika worker backlog meningkat, scale worker terlebih dahulu sebelum scale API.
+- Jika Redis memory tinggi, cek cache TTL, queue retention, dan failed job retention.
+- Jika database storage penuh, aktifkan emergency cleanup hanya berdasarkan runbook yang disetujui.
+- Jika reverse proxy error rate naik, cek certificate, upstream health, dan rate limit policy.
+
+## Completion Criteria
+
+Docker Compose production dianggap siap jika:
+
+- Tidak ada database atau Redis yang terekspos ke public network.
+- Semua service memiliki healthcheck yang sesuai.
+- Secret tidak ditulis langsung di compose file.
+- Reverse proxy mengaktifkan TLS dan security header.
+- Backup, restore, dan log retention terdokumentasi.

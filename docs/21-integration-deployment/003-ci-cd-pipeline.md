@@ -92,3 +92,68 @@ Setiap release wajib memiliki:
 - Feature flag state.
 - Known risk.
 - Rollback instruction.
+
+## Branch and Environment Mapping
+
+| Branch/Trigger | Target | Rule |
+| --- | --- | --- |
+| Pull request | Validation only | Tidak deploy production |
+| `develop` | Development | Auto deploy jika quality gate lulus |
+| `main` | Staging | Auto deploy staging setelah build dan test lulus |
+| Release tag | Production | Butuh approval manual dan rollback plan |
+| Hotfix tag | Production | Butuh approval manual, smoke test, dan postmortem note |
+
+## Quality Gate
+
+Pipeline wajib gagal jika:
+
+- Typecheck gagal.
+- Unit atau integration test gagal.
+- Contract test gagal untuk endpoint protected.
+- Secret terdeteksi di diff.
+- Critical vulnerability tidak memiliki waiver.
+- Docker image tidak memiliki healthcheck.
+- Migration tidak dapat dijalankan di staging.
+
+## Migration Gate
+
+Migration database harus melewati tahapan:
+
+1. Validate migration syntax.
+2. Run migration pada database ephemeral atau staging snapshot.
+3. Jalankan smoke test domain terkait.
+4. Catat rollback atau forward-fix plan.
+5. Jalankan production migration hanya pada deploy window yang disetujui.
+
+## Observability Gate
+
+Setelah deploy, pipeline atau operator wajib memantau:
+
+- Error rate API.
+- Latency p95/p99.
+- Frontend availability.
+- Queue backlog dan failed jobs.
+- Database connection dan slow query.
+- Authentication failure spike.
+- OTA sync failure spike.
+
+## Rollback Rule
+
+Rollback boleh dilakukan jika:
+
+- Smoke test production gagal.
+- Error rate melewati threshold.
+- Migration tidak menyentuh perubahan destructive yang tidak reversible.
+- Feature flag dapat dimatikan untuk mengisolasi perubahan.
+
+Jika migration sudah irreversible, gunakan forward-fix dengan approval incident commander.
+
+## Completion Criteria
+
+CI/CD dianggap siap jika:
+
+- Semua quality gate otomatis berjalan pada pull request.
+- Staging deploy dapat dilakukan tanpa langkah manual.
+- Production deploy membutuhkan approval dan menghasilkan release note.
+- Image tag, commit SHA, migration, dan rollback plan tercatat.
+- Post-deploy monitoring menjadi bagian dari release process.

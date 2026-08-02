@@ -106,3 +106,53 @@ Aturan retry:
 - Jangan hardcode endpoint di komponen UI.
 - Pisahkan data fetching, state management, dan UI rendering.
 - Gunakan feature flag untuk integrasi OTA dan workflow yang belum stabil.
+
+## Contract With Existing Blueprint
+
+Dokumen ini wajib konsisten dengan:
+
+- Frontend feature boundary pada `docs/14-frontend-foundation/` dan `docs/20-frontend-application/`.
+- Backend module boundary pada `docs/13-backend-foundation/`, `docs/18-backend-implementation/`, dan `docs/19-backend-application/`.
+- REST response, authentication, rate limit, versioning, dan API documentation pada `docs/16-api-contract/`.
+- Domain ownership pada `docs/08-core-application-modules/`, `docs/09-database-api-contract/`, dan `docs/17-core-services/`.
+
+## Integration Responsibility Matrix
+
+| Area | Frontend Responsibility | Backend Responsibility |
+| --- | --- | --- |
+| Authentication | Menampilkan form, route guard, refresh session | Validasi credential, token, role, tenant |
+| Authorization | Menyembunyikan UI yang tidak diizinkan | Menolak request tanpa permission |
+| Validation | Validasi UX awal dan pesan field | Validasi DTO dan domain rule final |
+| State | Client cache, optimistic UI terbatas | Source of truth data bisnis |
+| Error | Menampilkan feedback user | Menghasilkan error code konsisten |
+| Observability | Correlation id, client telemetry | Log, metric, tracing, audit |
+
+## Data Fetching Standard
+
+- Server-side fetching digunakan untuk halaman protected yang membutuhkan SEO rendah tetapi initial render cepat.
+- Client-side fetching digunakan untuk widget dashboard, polling status sync, dan interaksi yang sering berubah.
+- Mutation wajib melewati service/action layer, bukan langsung dari component.
+- Cache invalidation harus mengikuti domain event atau response mutation.
+- Data sensitif tidak boleh disimpan pada persistent browser storage tanpa alasan keamanan yang jelas.
+
+## Idempotency Rule
+
+Mutation berisiko tinggi wajib menggunakan idempotency key:
+
+- Create reservation.
+- Payment initiation.
+- Channel inventory push.
+- OTA webhook replay.
+- Bulk update inventory/rate.
+
+Idempotency key dibuat per user action dan dikirim ke backend melalui header atau body contract yang distandarkan.
+
+## Completion Criteria
+
+Integrasi frontend-backend dianggap siap jika:
+
+- Semua protected request membawa token dan tenant context.
+- Error backend dapat dipetakan menjadi UX state yang jelas.
+- Endpoint kritikal memiliki contract test.
+- Healthcheck dan telemetry dapat menghubungkan request frontend ke backend.
+- Tidak ada endpoint hardcoded langsung di komponen UI.

@@ -106,3 +106,56 @@ Sebelum production deploy:
 - Feature flag siap.
 - Rollback plan jelas.
 - Monitoring aktif.
+
+## Configuration Ownership
+
+| Configuration | Owner | Storage |
+| --- | --- | --- |
+| Non-secret app config | Engineering | Repository template atau environment manifest |
+| Secret production | DevOps/Security | Secret manager atau protected CI variable |
+| OTA credential | Integration owner | Secret manager dengan rotation note |
+| Payment credential | Finance/Platform owner | Secret manager dengan restricted access |
+| Observability token | DevOps | Secret manager |
+| Feature flag | Product/Engineering | Feature flag service atau config table |
+
+## Environment Parity Rule
+
+Development, staging, dan production harus memiliki struktur konfigurasi yang sama:
+
+- Nama variable konsisten.
+- Default value aman.
+- Perbedaan hanya pada value, capacity, credential, dan provider mode.
+- Staging wajib mendekati production untuk TLS, queue, migration, monitoring, dan rate limit.
+- Production tidak boleh bergantung pada konfigurasi lokal developer.
+
+## Release Environment Checklist
+
+Sebelum menaikkan perubahan environment:
+
+- Variable baru memiliki dokumentasi purpose.
+- Secret baru memiliki owner dan rotation policy.
+- Default value tidak membahayakan production.
+- Pipeline sudah membaca variable dari source yang benar.
+- Dashboard monitoring menampilkan dependency baru.
+- Rollback value diketahui.
+
+## Incident Environment Procedure
+
+Jika terjadi insiden environment:
+
+1. Freeze deployment.
+2. Identifikasi variable atau secret yang berubah.
+3. Bandingkan staging dan production manifest.
+4. Rollback value jika aman.
+5. Rotasi secret jika ada risiko exposure.
+6. Catat incident note di changelog atau runbook.
+
+## Completion Criteria
+
+Environment deployment dianggap siap jika:
+
+- Semua environment memiliki variable matrix yang jelas.
+- Secret tidak pernah masuk repository.
+- Staging dapat memvalidasi production deployment path.
+- Monitoring dan alerting aktif sebelum production traffic dibuka.
+- Setiap perubahan configuration memiliki owner dan rollback value.
