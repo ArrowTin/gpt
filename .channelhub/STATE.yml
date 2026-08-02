@@ -8,11 +8,11 @@ repository:
 
 phase:
 
-  current: 21
+  current: 22
 
 milestone:
 
-  Integration & Deployment
+  Security
 
 status:
 
@@ -62,9 +62,11 @@ completed:
 
   - 20
 
+  - 21
+
 current:
 
-  docs/21-integration-deployment
+  docs/22-security
 
 next:
 
