@@ -21,7 +21,7 @@ Satu increment deploy: env var doc, compose service, CI job stage, atau runbook 
 
 ## Validation
 
-- [checklists/deployment-production.md](../checklists/deployment-production.md)
+- [checklists/deployment-production.md](../../checklists/deployment-production.md)
 
 ## Output
 

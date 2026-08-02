@@ -7,6 +7,8 @@ PostgreSQL schema, migration, indexing, backup.
 ## Rules
 
 - Schema standard: [docs/15-database-implementation/001-postgresql-schema-standard.md](../docs/15-database-implementation/001-postgresql-schema-standard.md)
+- **Tabel & relasi kanonik (wajib diikuti):** [docs/15-database-implementation/009-canonical-erd.md](../docs/15-database-implementation/009-canonical-erd.md)
+- **DDL referensi (wajib diikuti):** [docs/15-database-implementation/010-postgresql-ddl-reference.md](../docs/15-database-implementation/010-postgresql-ddl-reference.md)
 - Entity design: [docs/15-database-implementation/002-domain-entity-design.md](../docs/15-database-implementation/002-domain-entity-design.md)
 - Migrations: [docs/15-database-implementation/003-database-migration-strategy.md](../docs/15-database-implementation/003-database-migration-strategy.md)
 - Indexing: [docs/15-database-implementation/005-database-indexing-strategy.md](../docs/15-database-implementation/005-database-indexing-strategy.md)

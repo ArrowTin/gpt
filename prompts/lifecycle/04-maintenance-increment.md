@@ -21,7 +21,7 @@ Satu increment operasi: alert rule doc, backup verify step, patch policy, atau p
 
 ## Validation
 
-- [checklists/maintenance-operations.md](../checklists/maintenance-operations.md)
+- [checklists/maintenance-operations.md](../../checklists/maintenance-operations.md)
 
 ## Output
 

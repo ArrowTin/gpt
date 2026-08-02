@@ -69,11 +69,22 @@ Monitoring
 /templates   Document Template
 /diagrams    Architecture Diagram
 /checklists  Quality Checklist
+/contracts   Machine Readable Contract (OpenAPI)
 ```
+
+## Contract Artifact
+
+Kontrak teknis yang wajib diikuti implementasi dan tidak boleh ditebak:
+
+- `contracts/openapi/channelhub.v1.yaml`
+- `docs/15-database-implementation/009-canonical-erd.md`
+- `docs/15-database-implementation/010-postgresql-ddl-reference.md`
+- `docs/13-backend-foundation/009-backend-project-structure.md`
+- `docs/14-frontend-foundation/009-frontend-project-structure.md`
 
 ## Status
 
-Phase: Foundation Initialization
+Phase: 22 — Security (lihat `.channelhub/STATE.yml`)
 
 Project: ChannelHub Enterprise Blueprint
 
@@ -87,7 +98,9 @@ WAJIB memulai dari
 
 START.md merupakan AI Execution Contract.
 
-START.md sudah mengandung seluruh informasi minimum yang diperlukan untuk melanjutkan project.
+START.md mengandung informasi minimum untuk melanjutkan project dan menunjuk seluruh kontrak teknis.
+
+Sebelum menulis kode, AI WAJIB membaca Contract Artifact di atas. Skema database dan kontrak API TIDAK boleh ditebak.
 
 AI TIDAK BOLEH menghentikan pekerjaan hanya karena:
 
@@ -99,5 +112,5 @@ AI TIDAK BOLEH menghentikan pekerjaan hanya karena:
 
 Jika kondisi tersebut terjadi,
 
-AI WAJIB menggunakan START.md sebagai working context dan tetap melanjutkan implementasi.
+AI WAJIB menggunakan START.md sebagai working context, mengerjakan satu deliverable saja, dan menandai asumsi yang dipakai.
 

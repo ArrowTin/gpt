@@ -16,5 +16,6 @@
 | MP-006 | docs/13-backend-foundation/006-redis-cache-queue-foundation.md | ADR-004/005 | Redis module |
 | MP-007 | docs/13-backend-foundation/007-external-api-integration-pattern.md | OTA client | HTTP client |
 | MP-008 | docs/13-backend-foundation/008-backend-observability-standard.md | standards/observability | Logger/metrics |
+| MP-009 | docs/13-backend-foundation/009-backend-project-structure.md | Jaga struktur folder & peta module↔tabel | Scaffold satu module sesuai struktur |
 
 **Validation:** code-review · testing-release

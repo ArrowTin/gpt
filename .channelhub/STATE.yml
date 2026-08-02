@@ -24,45 +24,45 @@ completed:
 
   - 01-business
 
-  - 02-system-architecture
+  - 02-product-architecture
 
-  - 03-domain-model
+  - 03-product-specification
 
-  - 04-database
+  - 04-technical-blueprint
 
-  - 05-api
+  - 05-ai-development-blueprint
 
-  - 06-security
+  - 06-implementation-roadmap
 
-  - 07-frontend
+  - 07-source-code-generation
 
-  - 08-backend
+  - 08-core-application-modules
 
-  - 09
+  - 09-database-api-contract
 
-  - 10
+  - 10-ai-agent-orchestration
 
-  - 11
+  - 11-autonomous-development-workflow
 
-  - 12
+  - 12-project-foundation
 
-  - 13
+  - 13-backend-foundation
 
-  - 14
+  - 14-frontend-foundation
 
-  - 15
+  - 15-database-implementation
 
-  - 16
+  - 16-api-contract
 
-  - 17
+  - 17-core-services
 
-  - 18
+  - 18-backend-implementation
 
-  - 19
+  - 19-backend-application
 
-  - 20
+  - 20-frontend-application
 
-  - 21
+  - 21-integration-deployment
 
 current:
 
@@ -71,6 +71,18 @@ current:
 next:
 
   docs/22-security
+
+contract_artifacts:
+
+  - contracts/openapi/channelhub.v1.yaml
+
+  - docs/15-database-implementation/009-canonical-erd.md
+
+  - docs/15-database-implementation/010-postgresql-ddl-reference.md
+
+  - docs/13-backend-foundation/009-backend-project-structure.md
+
+  - docs/14-frontend-foundation/009-frontend-project-structure.md
 
 last_update:
 

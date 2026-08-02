@@ -22,8 +22,8 @@ Selesaikan **satu slice** development: satu dokumen blueprint ATAU satu modul/fo
 
 ## Validation
 
-- [checklists/development-ready.md](../checklists/development-ready.md)
-- [checklists/code-review.md](../checklists/code-review.md)
+- [checklists/development-ready.md](../../checklists/development-ready.md)
+- [checklists/code-review.md](../../checklists/code-review.md)
 
 ## Output
 

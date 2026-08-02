@@ -8,6 +8,18 @@ Peta resmi seluruh dokumentasi blueprint ChannelHub Enterprise. Semua folder di 
 
 Repository ini adalah **Single Source of Truth** untuk business, product, architecture, standar engineering, prompt AI, dan checklist kualitas. Implementasi source code dilakukan di repository aplikasi terpisah dengan mengikuti blueprint ini.
 
+## Contract Artifact
+
+Lima dokumen berikut adalah kontrak teknis yang **tidak boleh ditebak** saat implementasi. Kode mengikuti kontrak, bukan sebaliknya.
+
+| Artefak | Isi |
+| --- | --- |
+| [contracts/openapi/channelhub.v1.yaml](../contracts/openapi/channelhub.v1.yaml) | Seluruh endpoint REST v1, request/response schema |
+| [15-database-implementation/009-canonical-erd.md](./15-database-implementation/009-canonical-erd.md) | Daftar tabel kanonik, relasi, enum status |
+| [15-database-implementation/010-postgresql-ddl-reference.md](./15-database-implementation/010-postgresql-ddl-reference.md) | DDL eksekusi, index, urutan migration |
+| [13-backend-foundation/009-backend-project-structure.md](./13-backend-foundation/009-backend-project-structure.md) | Struktur file NestJS, peta module ↔ tabel |
+| [14-frontend-foundation/009-frontend-project-structure.md](./14-frontend-foundation/009-frontend-project-structure.md) | Struktur file Next.js, peta route ↔ endpoint |
+
 ## Reading Order
 
 1. [README.md](../README.md) — prinsip dan alur development.
@@ -55,6 +67,7 @@ Repository ini adalah **Single Source of Truth** untuk business, product, archit
 | [templates/](../templates/) | Template dokumen & prompt | — |
 | [diagrams/](../diagrams/) | Diagram arsitektur | — |
 | [checklists/](../checklists/) | Quality gate | [05-ai-development-blueprint/006-ai-review-checklist.md](./05-ai-development-blueprint/006-ai-review-checklist.md) |
+| [contracts/](../contracts/) | Kontrak machine-readable (OpenAPI) | [16-api-contract/008-api-documentation-standard.md](./16-api-contract/008-api-documentation-standard.md) |
 
 ## Lifecycle Consistency
 
