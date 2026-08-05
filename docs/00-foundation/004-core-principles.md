@@ -4,6 +4,73 @@
 
 Prinsip inti menjadi aturan dasar seluruh keputusan bisnis dan teknis ChannelHub.
 
+---
+
+## AI TRIGGER
+
+### Tujuan Task
+Memahami dan menerapkan 10 core principles pada seluruh aspek implementasi ChannelHub.
+
+### Konteks yang Perlu Dipahami AI
+- Business First: teknologi mengikuti kebutuhan bisnis
+- Configuration Driven: perubahan bisnis jadi konfigurasi
+- Metadata Driven: sistem menggunakan metadata untuk komponen dinamis
+- Modular Architecture: domain dengan tanggung jawab jelas
+- Microservice Ready: siap untuk ekstraksi service
+- API First: kontrak API untuk kemampuan penting
+- Event Driven: perubahan penting sebagai event
+- Observability First: logging, monitoring, tracing, audit
+- Security by Design: keamanan dari awal
+- AI Assisted Development: AI sebagai partner engineering
+
+### Dependensi
+- docs/00-foundation/002-vision.md (vision)
+- docs/00-foundation/003-mission.md (mission)
+- docs/00-foundation/005-architecture-principles.md (architecture principles)
+
+### File/Folder yang Perlu Diperiksa
+- docs/02-product-architecture/ (implementasi principles di arsitektur)
+- docs/13-backend-foundation/ (backend implementation)
+- docs/14-frontend-foundation/ (frontend implementation)
+
+### Langkah Implementasi
+1. Pahami 10 core principles
+2. Terapkan principles pada setiap keputusan implementasi
+3. Validasi bahwa implementasi tidak melanggar principles
+
+### Kriteria Keberhasilan (Definition of Done)
+- AI dapat menjelaskan setiap core principle
+- Implementasi konsisten dengan principles
+- Tidak ada hard-coded business logic (configuration driven)
+- Seluruh sistem observable dan secure
+
+### Prompt Implementasi
+```
+Anda akan mengimplementasikan bagian dari ChannelHub Enterprise.
+
+SEBELUM mulai, baca docs/00-foundation/004-core-principles.md.
+
+Terapkan 10 core principles ini pada seluruh implementasi:
+1. Business First - teknologi mengikuti bisnis
+2. Configuration Driven - perubahan bisnis = konfigurasi
+3. Metadata Driven - gunakan metadata untuk komponen dinamis
+4. Modular Architecture - domain dengan tanggung jawab jelas
+5. Microservice Ready - siap untuk ekstraksi service
+6. API First - kontrak API untuk kemampuan penting
+7. Event Driven - perubahan penting = event
+8. Observability First - logging, monitoring, tracing, audit
+9. Security by Design - keamanan dari awal
+10. AI Assisted Development - AI sebagai partner
+
+PERTANYAAN WAJIB:
+- Apakah ini hard-coded business logic? Jika ya, jadikan konfigurasi.
+- Apakah ini observable? Jika tidak, tambahkan logging/metrics.
+- Apakah ini secure? Jika tidak, review security.
+- Apakah ini modular? Jika tidak, refactor.
+```
+
+---
+
 ## 1. Business First
 
 Teknologi mengikuti kebutuhan bisnis.

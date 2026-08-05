@@ -25,9 +25,10 @@ Lima dokumen berikut adalah kontrak teknis yang **tidak boleh ditebak** saat imp
 1. [README.md](../README.md) — prinsip dan alur development.
 2. [.channelhub/START.md](../.channelhub/START.md) — kontrak eksekusi AI dan fase aktif.
 3. [.channelhub/STATE.yml](../.channelhub/STATE.yml) — phase, milestone, completed phases.
-4. [00-foundation/001-overview.md](./00-foundation/001-overview.md) — fondasi proyek.
-5. [05-ai-development-blueprint/002-vibe-code-workflow.md](./05-ai-development-blueprint/002-vibe-code-workflow.md) — vibe code bertahap.
-6. [prompts/README.md](../prompts/README.md) — micro-prompt per increment.
+4. [00-foundation/009-global-implementation-rules.md](./00-foundation/009-global-implementation-rules.md) — aturan global implementasi (WAJIB dibaca sebelum task apapun).
+5. [00-foundation/001-overview.md](./00-foundation/001-overview.md) — fondasi proyek.
+6. [05-ai-development-blueprint/002-vibe-code-workflow.md](./05-ai-development-blueprint/002-vibe-code-workflow.md) — vibe code bertahap.
+7. [prompts/README.md](../prompts/README.md) — micro-prompt per increment.
 
 ## Phase Map
 

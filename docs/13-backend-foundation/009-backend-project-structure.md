@@ -4,6 +4,89 @@
 
 Menetapkan **struktur file dan folder konkret** aplikasi backend NestJS, termasuk file wajib setiap module, sehingga generator kode menghasilkan susunan yang sama pada setiap increment.
 
+---
+
+## AI TRIGGER
+
+### Tujuan Task
+Menetapkan struktur project backend NestJS yang menjadi Contract Artifact untuk seluruh implementasi backend.
+
+### Konteks yang Perlu Dipahami AI
+- Ini adalah CONTRACT ARTIFACT - struktur WAJIB diikuti, tidak boleh ditebak
+- Satu domain = satu module folder dengan nama jamak
+- Controller tipis: validasi + delegasi, business logic di service/domain
+- Akses database hanya melalui repository di module pemilik data
+- Setiap module wajib memiliki test unit dan e2e
+
+### Dependensi
+- docs/00-foundation/009-global-implementation-rules.md (aturan global)
+- docs/13-backend-foundation/001-nestjs-architecture-standard.md (arsitektur NestJS)
+- docs/15-database-implementation/009-canonical-erd.md (database schema)
+- contracts/openapi/channelhub.v1.yaml (API contract)
+
+### File/Folder yang Perlu Diperiksa
+- docs/13-backend-foundation/002-backend-module-design.md (module boundary)
+- docs/15-database-implementation/002-domain-entity-design.md (domain entity)
+- docs/18-backend-implementation/ (pola implementasi)
+
+### Langkah Implementasi
+1. Baca dan pahami struktur aplikasi dan isi wajib module
+2. Ikuti peta module ke kontrak untuk mapping endpoint ↔ tabel
+3. Gunakan konvensi penamaan file yang ditetapkan
+4. Ikuti urutan bootstrap increment untuk setup bertahap
+
+### Kriteria Keberhasilan (Definition of Done)
+- Struktur folder SESUAI dengan yang didefinisikan
+- Nama file mengikuti konvensi penamaan
+- Setiap module memiliki file wajib (module, controller, service, repository, dto, test)
+- Mapping module ↔ tabel sesuai peta kontrak
+
+### Prompt Implementasi
+```
+Anda akan membuat atau memodifikasi struktur project backend NestJS ChannelHub.
+
+PERINGATAN: Ini adalah CONTRACT ARTIFACT dari docs/13-backend-foundation/009-backend-project-structure.md.
+
+Struktur WAJIB diikuti secara eksak:
+- apps/backend/src/modules/{domain}/ dengan nama jamak
+- Setiap module WAJIB memiliki: module.ts, controller.ts, service.ts, repository.ts, dto/, domain/, events/, __tests__/
+- Controller tipis: hanya routing + guard + DTO
+- Business logic di service.ts atau domain/
+- Akses database HANYA melalui repository di module pemilik data
+
+Peta module ke tabel (WAJIB diikuti):
+- auth → sessions
+- users → users, user_roles
+- organizations → organizations, organization_members, organization_settings
+- roles → roles, permissions, role_permissions
+- properties → properties, room_types, rooms
+- inventory → inventory
+- rates → rate_plans, rate_calendar
+- reservations → reservations, reservation_rooms, reservation_events, guests
+- channels → channel_connections, channel_mappings, sync_jobs, sync_logs, webhook_events
+- subscriptions → subscription_plans, subscriptions, feature_entitlements
+- billing → invoices, invoice_items, payments, credit_wallets, credit_transactions
+- notifications → notifications, notification_templates
+- platform → menus, feature_flags, system_configurations, audit_logs
+
+Konvensi penamaan file:
+- Module: <domain>.module.ts
+- Controller: <domain>.controller.ts
+- Service: <domain>.service.ts
+- Repository: <domain>.repository.ts
+- DTO request: <action>-<entity>.dto.ts
+- DTO response: <entity>.response.ts
+- Processor: <domain>-<job>.processor.ts
+- Test unit: <file>.spec.ts
+- Test e2e: <domain>.controller.e2e-spec.ts
+
+JANGAN membuat struktur sendiri. JANGAN menebak nama file. JANGAN mengubah kontrak tanpa update file ini dulu.
+
+Jika informasi kurang, TANDAI sebagai kebutuhan klarifikasi.
+```
+
+---
+
 ## Scope
 
 `apps/backend` pada monorepo ChannelHub ([docs/12-project-foundation/001-monorepo-architecture.md](../12-project-foundation/001-monorepo-architecture.md)). Worker BullMQ berada pada aplikasi yang sama dengan entrypoint terpisah.

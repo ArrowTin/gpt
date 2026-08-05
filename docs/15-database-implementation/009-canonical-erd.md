@@ -4,6 +4,110 @@
 
 Menetapkan **model data kanonik** ChannelHub: daftar tabel resmi, kepemilikan domain, dan relasi antar tabel. Dokumen ini adalah satu-satunya sumber kebenaran untuk nama tabel dan relasi. DDL eksekusi ada di [010-postgresql-ddl-reference.md](./010-postgresql-ddl-reference.md), definisi field dan business rule ada di [002-domain-entity-design.md](./002-domain-entity-design.md).
 
+---
+
+## AI TRIGGER
+
+### Tujuan Task
+Menetapkan model data kanonik yang menjadi CONTRACT ARTIFACT untuk seluruh implementasi database.
+
+### Konteks yang Perlu Dipahami AI
+- Ini adalah CONTRACT ARTIFACT - sumber kebenaran TUNGGAL untuk nama tabel dan relasi
+- DDL eksekusi ada di 010-postgresql-ddl-reference.md
+- Definisi field dan business rule ada di 002-domain-entity-design.md
+- Nama tabel bersifat FINAL, dokumen lain wajib memakai nama yang sama
+- Setiap tabel tenant-owned memiliki kolom `organization_id` dan wajib difilter
+- Primary key `uuid` dengan default `gen_random_uuid()`
+- Setiap tabel memiliki `created_at`, `updated_at`; yang dapat dihapus logis memiliki `deleted_at`
+
+### Dependensi
+- docs/00-foundation/009-global-implementation-rules.md (aturan global)
+- docs/15-database-implementation/002-domain-entity-design.md (domain entity design)
+- docs/15-database-implementation/010-postgresql-ddl-reference.md (DDL reference)
+
+### File/Folder yang Perlu Diperiksa
+- docs/02-product-architecture/002-domain-architecture.md (domain map)
+- adr/ADR-006-multi-tenant-isolation.md (tenant isolation)
+- adr/ADR-007-event-driven-integration.md (event driven integration)
+
+### Langkah Implementasi
+1. Baca dan pahami domain ownership dan tenant classification
+2. Pahami entity relationship diagram
+3. Pahami cross-domain relationship (hanya FK yang boleh lintas domain)
+4. Gunakan lifecycle enum yang didefinisikan untuk status
+
+### Kriteria Keberhasilan (Definition of Done)
+- Seluruh implementasi database mengikuti tabel yang didefinisikan
+- Nama tabel, kolom, dan enum SESUAI dengan yang didefinisikan
+- Tenant filtering diterapkan pada seluruh query tenant-owned
+- Cross-domain relationship hanya menggunakan FK yang didefinisikan
+
+### Prompt Implementasi
+```
+Anda akan mengimplementasikan atau memodifikasi database ChannelHub.
+
+PERINGATAN: Ini adalah CONTRACT ARTIFACT dari docs/15-database-implementation/009-canonical-erd.md.
+
+Dokumen ini adalah SATU-SATUNYA sumber kebenaran untuk nama tabel dan relasi.
+
+Rules (WAJIB diikuti):
+- Nama tabel pada dokumen ini bersifat FINAL
+- Dokumen lain WAJIB memakai nama yang sama
+- JANGAN menebak nama tabel atau kolom
+- JANGAN membuat tabel baru tanpa update dokumen ini dulu
+
+Domain Ownership (WAJIB diikuti):
+- Identity: users, roles, permissions, role_permissions, user_roles, sessions, audit_logs
+- Organization: organizations, organization_members, organization_settings
+- Property: properties, room_types, rooms, rate_plans, rate_calendar, inventory
+- Reservation: guests, booking_sources, reservations, reservation_rooms, reservation_events
+- OTA Integration: ota_channels, channel_connections, channel_mappings, sync_jobs, sync_logs, webhook_events
+- Subscription: subscription_plans, subscriptions, feature_entitlements
+- Billing: invoices, invoice_items, payments, credit_wallets, credit_transactions
+- Notification: notification_templates, notifications
+- Platform Management: feature_flags, menus, system_configurations
+
+Tenant Classification (WAJIB diikuti):
+- Global: permissions, ota_channels, subscription_plans, booking_sources, feature_flags, menus, system_configurations, notification_templates (TANPA organization_id)
+- Tenant-owned: seluruh tabel lain (WAJIB organization_id)
+- Derived tenant: role_permissions, user_roles, reservation_rooms, reservation_events, invoice_items, credit_transactions, sync_logs (tenant diturunkan dari parent)
+
+Table Standards (WAJIB diikuti):
+- Primary key: uuid dengan default gen_random_uuid()
+- Timestamp: created_at, updated_at pada SEMUA tabel
+- Soft delete: deleted_at pada tabel yang dapat dihapus logis
+- Tenant filtering: organization_id WAJIB difilter pada setiap query tenant-owned
+
+Cross-Domain Relationship (HANYA FK ini yang boleh lintas domain):
+- organization_members.user_id → users.id
+- properties.organization_id → organizations.id
+- reservations.property_id → properties.id
+- channel_mappings.room_type_id → room_types.id
+- subscriptions.organization_id → organizations.id
+- invoices.subscription_id → subscriptions.id
+
+Lifecycle Enum (WAJIB digunakan):
+- user_status: PENDING, ACTIVE, SUSPENDED, DEACTIVATED
+- organization_status: TRIAL, ACTIVE, SUSPENDED, CLOSED
+- property_status: DRAFT, ACTIVE, INACTIVE, ARCHIVED
+- reservation_status: PENDING, CONFIRMED, CHECKED_IN, CHECKED_OUT, CANCELLED, NO_SHOW
+- subscription_status: TRIAL, ACTIVE, EXPIRING, EXPIRED, SUSPENDED, CANCELLED
+- invoice_status: DRAFT, ISSUED, PAID, OVERDUE, VOID
+- payment_status: PENDING, SUCCEEDED, FAILED, REFUNDED
+- sync_status: QUEUED, RUNNING, SUCCEEDED, FAILED, RETRYING
+- connection_status: DISCONNECTED, CONNECTED, ERROR, REVOKED
+- notification_status: QUEUED, SENT, FAILED, READ
+
+Jika perlu tabel baru atau perubahan struktur:
+1. UPDATE docs/15-database-implementation/009-canonical-erd.md dulu
+2. UPDATE docs/15-database-implementation/010-postgresql-ddl-reference.md
+3. Baru implementasikan perubahan
+
+JANGAN membuat asumsi tentang database structure. JANGAN menebak nama tabel.
+```
+
+---
+
 ## Scope
 
 Seluruh tabel operasional platform pada satu database PostgreSQL logis, dengan boundary domain yang tetap dipertahankan agar siap dipecah menjadi microservice (ADR-001, ADR-003).

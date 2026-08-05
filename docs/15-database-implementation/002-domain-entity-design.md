@@ -4,6 +4,115 @@
 
 Mendefinisikan **entity, field wajib, invariant, dan aturan bisnis** setiap domain ChannelHub. Dokumen ini menjembatani domain architecture dengan DDL: apa arti setiap data dan aturan apa yang tidak boleh dilanggar aplikasi.
 
+---
+
+## AI TRIGGER
+
+### Tujuan Task
+Memahami entity, field wajib, invariant, dan aturan bisnis setiap domain untuk implementasi domain layer yang benar.
+
+### Konteks yang Perlu Dipahami AI
+- Entity merepresentasikan bisnis, bukan sekadar tabel
+- Aturan bisnis wajib ditegakkan di domain layer, bukan hanya di database
+- Setiap entity tenant-owned tidak boleh diakses tanpa tenant context
+- Perubahan status wajib menghasilkan event atau audit record
+- Constraint database adalah jaring pengaman terakhir, bukan pengganti validasi domain
+
+### Dependensi
+- docs/00-foundation/009-global-implementation-rules.md (aturan global)
+- docs/15-database-implementation/009-canonical-erd.md (canonical ERD)
+- docs/15-database-implementation/010-postgresql-ddl-reference.md (DDL reference)
+
+### File/Folder yang Perlu Diperiksa
+- docs/02-product-architecture/002-domain-architecture.md (domain map)
+- docs/03-product-specification/002-role-permission-system.md (role permission)
+- docs/01-business/007-subscription-model.md (subscription)
+
+### Langkah Implementasi
+1. Baca dan pahami entity design untuk setiap domain
+2. Implementasikan business rule di domain layer (service/entity)
+3. Pastikan invariant ditegakkan di application layer
+4. Generate event untuk perubahan status penting
+
+### Kriteria Keberhasilan (Definition of Done)
+- Business rule ditegakkan di domain layer
+- Invariant dipertahankan di application layer
+- Event digenerate untuk perubahan status
+- Tenant context diterapkan pada entity tenant-owned
+
+### Prompt Implementasi
+```
+Anda akan mengimplementasikan domain entity atau business logic ChannelHub.
+
+Baca docs/15-database-implementation/002-domain-entity-design.md untuk memahami entity dan business rule.
+
+Rules (WAJIB diikuti):
+- Entity merepresentasikan bisnis, bukan sekadar tabel
+- Aturan bisnis di bawah WAJIB ditegakkan di domain layer, bukan hanya di database
+- Setiap entity tenant-owned TIDAK BOLEH diakses tanpa tenant context
+- Perubahan status WAJIB menghasilkan event atau audit record
+- Constraint database adalah jaring pengaman terakhir, bukan pengganti validasi domain
+
+Domain Entity Design:
+
+Identity Domain:
+- users: identitas orang, bukan anggota organisasi
+  - email unik global, case-insensitive
+  - password_hash dengan Argon2id
+  - status: PENDING sebelum verifikasi, ACTIVE setelah verifikasi
+  - is_super_admin: akses lintas tenant (break-glass), wajib audit
+  - failed_login_count, locked_until: proteksi brute force
+- roles/permissions/user_roles: akses final = Role + Permission + Feature Entitlement + Organization Policy
+  - permissions global, format RESOURCE_ACTION
+  - roles dengan organization_id IS NULL adalah system role
+  - roles.level mengikuti hierarki
+  - setiap perubahan role_permissions menulis audit_logs
+- sessions: refresh token disimpan sebagai hash, rotasi mengisi rotated_from
+
+Organization Domain:
+- organizations: tenant sekaligus subscriber
+  - Tepat satu organization_members.is_owner = true per organisasi
+  - Organisasi SUSPENDED menolak seluruh operasi tulis kecuali pembayaran dan renewal
+  - Soft delete untuk organisasi
+
+Property Domain:
+- properties → room_types → rooms: hierarki master data properti
+  - properties.code unik per organisasi
+  - room_types.total_rooms harus sama dengan jumlah rooms aktif
+  - rate_plans mata uang wajib sama dengan properties.currency
+  - rate_calendar satu harga per rate_plan_id + stay_date
+  - inventory booked_units + blocked_units <= total_units (anti oversell)
+
+Reservation Domain:
+- Reservasi dengan business rule yang ketat
+
+OTA Integration Domain:
+- Channel connection dengan proper sync mechanism
+
+Subscription Domain:
+- Subscription dengan proper lifecycle
+
+Billing Domain:
+- Invoice dan payment dengan proper calculation
+
+Notification Domain:
+- Notification template dan delivery
+
+Platform Management Domain:
+- Feature flags, menus, system configurations
+
+Implementasikan business rule di domain layer:
+1. Buat entity class dengan proper invariant
+2. Implementasikan business logic di service layer
+3. Generate event untuk perubahan status penting
+4. Pastikan tenant context diterapkan
+5. Validasi invariant sebelum persist
+
+JANGAN hanya mengandalkan constraint database. JANGAN bypass business rule di domain layer.
+```
+
+---
+
 ## Scope
 
 Seluruh entity operasional platform. Nama tabel mengikuti [009-canonical-erd.md](./009-canonical-erd.md); tipe kolom mengikuti [010-postgresql-ddl-reference.md](./010-postgresql-ddl-reference.md).

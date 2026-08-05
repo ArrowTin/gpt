@@ -36,9 +36,12 @@ Baca file START.md ini.
 Baca .channelhub/STATE.yml untuk fase aktif.
 
 4.
-Baca dokumen pada bagian REFERENCES di bawah.
+Baca docs/00-foundation/009-global-implementation-rules.md untuk aturan global implementasi.
 
 5.
+Baca dokumen pada bagian REFERENCES di bawah.
+
+6.
 Jalankan SATU micro-prompt per sesi
 sesuai prompts/phases/phase-{fase}-*.md.
 

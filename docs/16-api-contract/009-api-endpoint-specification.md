@@ -4,6 +4,113 @@
 
 Menjelaskan **seluruh endpoint REST v1** ChannelHub: tanggung jawab, permission, dan perilaku khusus. Definisi teknis request/response berada pada file OpenAPI [contracts/openapi/channelhub.v1.yaml](../../contracts/openapi/channelhub.v1.yaml) yang menjadi sumber kebenaran.
 
+---
+
+## AI TRIGGER
+
+### Tujuan Task
+Menetapkan spesifikasi endpoint API yang menjadi CONTRACT ARTIFACT untuk seluruh implementasi API.
+
+### Konteks yang Perlu Dipahami AI
+- Ini adalah CONTRACT ARTIFACT - OpenAPI adalah kontrak, controller, DTO, dan client SDK diturunkan darinya
+- Definisi teknis request/response berada di contracts/openapi/channelhub.v1.yaml
+- Seluruh endpoint tenant-scoped wajib mengirim header X-Tenant-Id
+- Endpoint yang mengubah state secara bulk atau transaksional wajib menerima header Idempotency-Key
+- Response selalu memakai envelope, tidak ada endpoint yang mengembalikan array telanjang
+- Penambahan field bersifat backward compatible, penghapusan atau perubahan tipe menuntut versi baru
+
+### Dependensi
+- docs/00-foundation/009-global-implementation-rules.md (aturan global)
+- contracts/openapi/channelhub.v1.yaml (OpenAPI contract)
+- docs/16-api-contract/002-api-response-format.md (response format)
+- docs/16-api-contract/005-api-authentication-standard.md (auth standard)
+
+### File/Folder yang Perlu Diperiksa
+- docs/15-database-implementation/009-canonical-erd.md (canonical ERD)
+- docs/16-api-contract/010-error-code-catalog.md (error code catalog)
+- docs/16-api-contract/007-api-versioning-strategy.md (versioning strategy)
+
+### Langkah Implementasi
+1. Baca dan pahami katalog endpoint yang didefinisikan
+2. Implementasikan endpoint sesuai spesifikasi
+3. Pastikan permission check berfungsi
+4. Pastikan response format sesuai envelope
+
+### Kriteria Keberhasilan (Definition of Done)
+- Endpoint mengikuti spesifikasi yang didefinisikan
+- Permission check berfungsi sesuai tabel
+- Response format sesuai envelope
+- Header wajib (Authorization, X-Tenant-Id) divalidasi
+
+### Prompt Implementasi
+```
+Anda akan mengimplementasikan API endpoint ChannelHub.
+
+PERINGATAN: Ini adalah CONTRACT ARTIFACT dari docs/16-api-contract/009-api-endpoint-specification.md.
+
+OpenAPI (contracts/openapi/channelhub.v1.yaml) adalah KONTRAK.
+Controller, DTO, dan client SDK diturunkan darinya, BUKAN sebaliknya.
+
+Rules (WAJIB diikuti):
+- OpenAPI adalah kontrak, JANGAN mengubah endpoint tanpa update OpenAPI dulu
+- Seluruh endpoint tenant-scoped WAJIB mengirim header X-Tenant-Id
+- Endpoint yang mengubah state secara bulk/transaksional WAJIB menerima header Idempotency-Key
+- Response SELALU memakai envelope, TIDAK ADA endpoint yang mengembalikan array telanjang
+- Penambahan field bersifat backward compatible
+- Penghapusan atau perubahan tipe menuntut versi baru (v2)
+
+Konvensi (WAJIB diikuti):
+- Base path: /api/v1
+- Format id: uuid
+- Penamaan JSON: camelCase (kolom database snake_case dipetakan di layer mapper)
+- Pagination: ?page=1&pageSize=20, maksimum pageSize=100
+- Tanggal: date untuk tanggal menginap, date-time ISO 8601 UTC untuk timestamp
+- Header wajib: Authorization: Bearer <accessToken>, X-Tenant-Id, X-Correlation-Id (opsional)
+
+Katalog Endpoint (WAJIB diikuti):
+- POST /auth/login - Terbitkan access + refresh token (publik)
+- POST /auth/refresh - Rotasi refresh token (publik token)
+- POST /auth/logout - Cabut session aktif (authenticated)
+- GET /users/me - Profil, permission, entitlement (authenticated)
+- GET /users - Daftar user tenant (USER_READ)
+- POST /users - Undang user (USER_CREATE)
+- GET /organizations - Daftar organisasi (authenticated)
+- POST /organizations - Buat organisasi (authenticated)
+- GET /properties - Daftar properti (PROPERTY_READ)
+- POST /properties - Buat properti (PROPERTY_CREATE)
+- GET /properties/{id}/inventory - Kalender inventory (INVENTORY_READ)
+- PUT /properties/{id}/inventory - Update inventory bulk (INVENTORY_UPDATE)
+- GET /reservations - Daftar reservasi (RESERVATION_READ)
+- POST /reservations - Buat reservasi transaksional (RESERVATION_CREATE)
+- PATCH /reservations/{id}/status - Transisi status (RESERVATION_UPDATE)
+- GET /channel-connections - Koneksi channel tenant (CHANNEL_READ)
+- POST /channel-connections - Hubungkan property ke channel (CHANNEL_CONNECT)
+- PUT /channel-connections/{id}/mappings - Set mapping (CHANNEL_UPDATE)
+- POST /channel-connections/{id}/sync - Jadwalkan sync (CHANNEL_SYNC)
+- GET /subscriptions/current - Subscription tenant (SUBSCRIPTION_READ)
+- GET /invoices - Daftar invoice (BILLING_READ)
+- GET /notifications - Notifikasi user (authenticated)
+- GET /menus - Menu dinamis (authenticated)
+- GET /health - Liveness & readiness (publik)
+
+Perilaku Khusus:
+- POST /reservations: transaksi database, validasi inventory, 409 jika unavailable
+- PUT .../inventory dan .../rates: bulk idempoten, 409 jika version conflict
+- POST /channel-connections/{id}/sync: return 202 (worker), 402 jika insufficient credit
+- POST /webhooks/ota/{channelCode}: HMAC signature verification, return 202
+
+Implementasikan:
+1. Controller sesuai endpoint spesifikasi
+2. DTO sesuai OpenAPI schema
+3. Permission check sesuai tabel permission
+4. Response format sesuai envelope
+5. Error code sesuai error code catalog
+
+JANGAN membuat endpoint baru tanpa update spesifikasi. JANGAN mengubah respons tanpa update OpenAPI.
+```
+
+---
+
 ## Scope
 
 API publik platform di bawah prefix `/api/v1`. Endpoint internal antar service dan endpoint worker tidak termasuk.

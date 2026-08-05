@@ -4,6 +4,95 @@
 
 Menyediakan **DDL eksekusi lengkap** untuk seluruh tabel kanonik ChannelHub. Migration pertama aplikasi wajib menghasilkan schema yang setara dengan dokumen ini.
 
+---
+
+## AI TRIGGER
+
+### Tujuan Task
+Menyediakan DDL eksekusi yang menjadi CONTRACT ARTIFACT untuk seluruh implementasi database migration.
+
+### Konteks yang Perlu Dipahami AI
+- Ini adalah CONTRACT ARTIFACT - DDL eksekusi lengkap yang WAJIB diikuti
+- Migration pertama aplikasi wajib menghasilkan schema yang setara dengan dokumen ini
+- Daftar tabel dan relasi mengikuti 009-canonical-erd.md
+- Definisi field dan aturan bisnis ada di 002-domain-entity-design.md
+- DDL adalah kontrak, perubahan kolom wajib melalui migration baru
+- PostgreSQL 15+, extension `pgcrypto` untuk `gen_random_uuid()`
+
+### Dependensi
+- docs/00-foundation/009-global-implementation-rules.md (aturan global)
+- docs/15-database-implementation/009-canonical-erd.md (canonical ERD)
+- docs/15-database-implementation/002-domain-entity-design.md (domain entity design)
+
+### File/Folder yang Perlu Diperiksa
+- docs/15-database-implementation/001-postgresql-schema-standard.md (schema standard)
+- docs/15-database-implementation/003-database-migration-strategy.md (migration strategy)
+- docs/15-database-implementation/005-database-indexing-strategy.md (indexing strategy)
+
+### Langkah Implementasi
+1. Gunakan DDL di dokumen ini sebagai reference untuk migration
+2. Pastikan migration menghasilkan schema yang setara
+3. Ikuti urutan migration yang ditentukan
+4. Jangan mengubah migration lama, buat migration baru untuk perubahan
+
+### Kriteria Keberhasilan (Definition of Done)
+- Migration menghasilkan schema yang setara dengan DDL
+- Tabel, kolom, tipe data, constraint SESUAI dengan DDL
+- Index SESUAI dengan yang didefinisikan
+- Enum SESUAI dengan yang didefinisikan
+
+### Prompt Implementasi
+```
+Anda akan membuat atau memodifikasi database migration ChannelHub.
+
+PERINGATAN: Ini adalah CONTRACT ARTIFACT dari docs/15-database-implementation/010-postgresql-ddl-reference.md.
+
+DDL adalah kontrak. Migration pertama aplikasi WAJIB menghasilkan schema yang setara dengan dokumen ini.
+
+Rules (WAJIB diikuti):
+- DDL adalah kontrak, JANGAN diubah sembarangan
+- Perubahan kolom WAJIB melalui migration baru, JANGAN mengubah migration lama
+- Semua tabel tenant-owned memakai organization_id uuid NOT NULL REFERENCES organizations(id)
+- Uang disimpan sebagai numeric(14,2) dengan kolom currency char(3)
+- Kredit disimpan sebagai bigint (satuan credit, bukan mata uang)
+- Timestamp memakai timestamptz
+- Tanggal operasional hotel (stay_date, check_in) memakai date
+- Kolom konfigurasi dinamis memakai jsonb (configuration driven)
+- Kredensial OTA TIDAK disimpan plaintext, gunakan credentials_encrypted bytea
+
+Extension & Enum (WAJIB):
+- CREATE EXTENSION IF NOT EXISTS pgcrypto
+- Enum: user_status, organization_status, property_status, reservation_status, subscription_status, invoice_status, payment_status, sync_status, connection_status, notification_status
+
+Standar Table (WAJIB diikuti):
+- Primary key: uuid PRIMARY KEY DEFAULT gen_random_uuid()
+- Timestamp: created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+- Soft delete: deleted_at timestamptz (nullable)
+- Tenant filtering: organization_id untuk tenant-owned
+
+Urutan Migration (WAJIB diikuti):
+1. Extension & enum
+2. Identity domain (users, roles, permissions, role_permissions, user_roles, sessions, audit_logs)
+3. Organization domain (organizations, organization_settings, organization_members)
+4. Property domain (properties, room_types, rooms, rate_plans, rate_calendar, inventory)
+5. Reservation domain (guests, booking_sources, reservations, reservation_rooms, reservation_events)
+6. OTA Integration domain (ota_channels, channel_connections, channel_mappings, sync_jobs, sync_logs, webhook_events)
+7. Subscription domain (subscription_plans, subscriptions, feature_entitlements)
+8. Billing domain (invoices, invoice_items, payments, credit_wallets, credit_transactions)
+9. Notification domain (notification_templates, notifications)
+10. Platform Management domain (feature_flags, menus, system_configurations)
+
+Jika perlu perubahan schema:
+1. UPDATE docs/15-database-implementation/009-canonical-erd.md dulu
+2. UPDATE docs/15-database-implementation/010-postgresql-ddl-reference.md dulu
+3. Buat migration baru (JANGAN ubah migration lama)
+4. Pastikan migration menghasilkan schema yang setara dengan DDL
+
+JANGAN menebak DDL. JANGAN membuat migration tanpa reference DDL.
+```
+
+---
+
 ## Scope
 
 PostgreSQL 15+, satu database logis, extension `pgcrypto` untuk `gen_random_uuid()`. Daftar tabel dan relasi mengikuti [009-canonical-erd.md](./009-canonical-erd.md); definisi field dan aturan bisnis ada di [002-domain-entity-design.md](./002-domain-entity-design.md).
