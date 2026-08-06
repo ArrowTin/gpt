@@ -36,14 +36,20 @@ Baca file START.md ini.
 Baca .channelhub/STATE.yml untuk fase aktif.
 
 4.
-Baca docs/00-foundation/009-global-implementation-rules.md untuk aturan global implementasi.
+Baca docs/00-foundation/009-global-implementation-rules.md untuk aturan global implementasi (WAJIB).
 
 5.
-Baca dokumen pada bagian REFERENCES di bawah.
+Baca monitoring.md untuk melihat task numbering dan progress.
 
 6.
-Jalankan SATU micro-prompt per sesi
-sesuai prompts/phases/phase-{fase}-*.md.
+Jalankan SATU subtask per sesi sesuai sistem task numbering (DEV-001-A, TEST-001-A, dll).
+
+Sistem task menggunakan 3 level:
+- Level 1: DEV-001 (Task utama)
+- Level 2: DEV-001-A, DEV-001-B (Subtask)
+- Level 3: DEV-001-A-1, DEV-001-A-2 (Sub-subtask jika perlu)
+
+Total ada 175 subtasks yang dibagi menjadi manageable chunks.
 
 Jika AI tidak dapat membaca file selain README.md dan START.md,
 lihat bagian FAILSAFE.
@@ -72,6 +78,12 @@ AI DIBERIKAN KEWENANGAN UNTUK:
 
 ✓ membuat testing
 
+✓ membuat infrastructure as code
+
+✓ membuat monitoring setup
+
+✓ membuat operational runbook
+
 SELAMA:
 
 - tidak mengubah arsitektur utama tanpa ADR baru
@@ -85,6 +97,8 @@ SELAMA:
 - tidak mengubah kontrak tanpa memperbarui
   contracts/openapi/channelhub.v1.yaml dan
   docs/15-database-implementation/010-postgresql-ddl-reference.md
+
+- semua output source code ditempatkan di folder: channelhub-app/
 
 ===========================================================
 
@@ -136,6 +150,18 @@ Queue:
 
 BullMQ
 
+Testing:
+
+Jest, Playwright, k6, Lighthouse CI
+
+Deployment:
+
+Docker, Kubernetes, Terraform, AWS
+
+Monitoring:
+
+Datadog, ELK Stack, CloudWatch
+
 ===========================================================
 
 CURRENT STATE
@@ -144,19 +170,46 @@ CURRENT STATE
 
 Current Phase:
 
-22
+COMPLETE
 
 Current Milestone:
 
-Security
+Documentation Enhancement Complete
 
 Status:
 
-RUNNING
+READY FOR IMPLEMENTATION
 
 Sumber kebenaran status:
 
 .channelhub/STATE.yml
+
+Documentation Status:
+
+95% - Production Ready
+
+===========================================================
+
+OUTPUT DIRECTORY
+
+===========================================================
+
+Seluruh implementasi source code WAJIB ditempatkan di:
+
+channelhub-app/
+
+Struktur output:
+channelhub-app/
+├── apps/
+│   ├── backend/          # NestJS application
+│   └── frontend/         # NextJS application
+├── services/             # Microservices (jika diperlukan)
+├── packages/             # Shared packages
+├── infrastructure/       # Terraform, Docker, K8s configs
+├── tests/                # Test files
+└── docs/                 # Generated documentation
+
+JANGAN membuat source code di folder lain selain channelhub-app/
 
 ===========================================================
 
@@ -200,24 +253,43 @@ Referensi wajib saat implementasi:
 
 README.md
 
-docs/02-product-architecture/
+.channelhub/OUTPUT-CONFIG.md (output directory structure)
 
+docs/00-foundation/009-global-implementation-rules.md (WAJIB)
+
+docs/00-foundation/011-documentation-completeness-assessment.md
+
+Pembangunan/Development:
+docs/00-foundation/
 docs/13-backend-foundation/
-
 docs/14-frontend-foundation/
-
 docs/15-database-implementation/
-
 docs/16-api-contract/
-
 docs/17-core-services/
-
+docs/18-backend-implementation/
 docs/19-backend-application/
-
 docs/20-frontend-application/
 
-docs/21-integration-deployment/
+Testing:
+docs/02-product-architecture/010-testing-strategy.md
+docs/02-product-architecture/011-test-automation-setup.md
+docs/02-product-architecture/012-performance-testing-strategy.md
+docs/02-product-architecture/013-test-coverage-implementation.md
 
+Deployment:
+docs/12-project-foundation/
+docs/21-integration-deployment/005-infrastructure-as-code.md
+docs/21-integration-deployment/007-monitoring-alerting-strategy.md
+
+Maintenance:
+docs/22-security/007-operational-maintenance-runbook.md
+docs/21-integration-deployment/007-monitoring-alerting-strategy.md
+
+Backup & Disaster Recovery:
+docs/15-database-implementation/008-database-backup-recovery-standard.md
+docs/21-integration-deployment/006-disaster-recovery-plan.md
+
+Security:
 docs/22-security/
 
 adr/
@@ -226,27 +298,79 @@ standards/
 
 ===========================================================
 
-DELIVERABLES PHASE 22
+IMPLEMENTATION WORKFLOW
 
 ===========================================================
 
-001-security-baseline-platform.md
+1. PEMBANGUNAN/DEVELOPMENT:
+   - Baca foundation documents
+   - Baca backend/frontend foundation
+   - Baca database implementation
+   - Baca API contract
+   - Implementasi di channelhub-app/
 
-002-authentication-hardening.md
+2. TESTING:
+   - Baca test automation setup
+   - Baca performance testing strategy
+   - Baca test coverage implementation
+   - Implementasi test di channelhub-app/tests/
 
-003-authorization-tenant-isolation.md
+3. DEPLOYMENT:
+   - Baca infrastructure as code
+   - Baca monitoring & alerting strategy
+   - Implementasi di channelhub-app/infrastructure/
 
-004-secrets-and-credential-management.md
+4. MAINTENANCE:
+   - Baca operational maintenance runbook
+   - Baca monitoring & alerting strategy
+   - Implementasi monitoring di channelhub-app/
 
-005-security-testing-and-audit.md
+5. BACKUP & DISASTER RECOVERY:
+   - Baca backup recovery standard
+   - Baca disaster recovery plan
+   - Implementasi di channelhub-app/infrastructure/
 
-006-incident-response-runbook.md
+===========================================================
 
-Seluruh berkas berada pada docs/22-security/.
+AI TRIGGER DOCUMENTATION
 
-Micro-prompt per berkas:
+===========================================================
 
-prompts/phases/phase-22-security.md
+Dokumen dengan AI Trigger (siap dieksekusi AI):
+
+Foundation (docs/00-foundation/):
+- 001-overview.md
+- 002-vision.md
+- 003-mission.md
+- 004-core-principles.md
+- 005-architecture-principles.md
+- 008-documentation-standard.md
+- 009-global-implementation-rules.md (WAJIB)
+
+Backend Foundation (docs/13-backend-foundation/):
+- 001-009 (semua dokumen)
+
+Frontend Foundation (docs/14-frontend-foundation/):
+- 001-009 (semua dokumen)
+
+Database Implementation (docs/15-database-implementation/):
+- 001-010 (semua dokumen)
+
+API Contract (docs/16-api-contract/):
+- 009-api-endpoint-specification.md
+
+Testing (docs/02-product-architecture/):
+- 011-test-automation-setup.md
+- 012-performance-testing-strategy.md
+- 013-test-coverage-implementation.md
+
+Deployment (docs/21-integration-deployment/):
+- 005-infrastructure-as-code.md
+- 006-disaster-recovery-plan.md
+- 007-monitoring-alerting-strategy.md
+
+Maintenance (docs/22-security/):
+- 007-operational-maintenance-runbook.md
 
 ===========================================================
 
@@ -254,13 +378,17 @@ DEFINITION OF DONE
 
 ===========================================================
 
-Milestone dianggap selesai jika:
+Setiap task dianggap selesai jika:
 
-✓ seluruh deliverables selesai
+✓ specification terpenuhi
 
-✓ seluruh specification terpenuhi
+✓ struktur sesuai CONTRACT ARTIFACT
 
-✓ struktur konsisten
+✓ source code ditempatkan di channelhub-app/
+
+✓ testing terimplementasi dengan coverage target terpenuhi
+
+✓ documentation terupdate
 
 ✓ cross reference benar (tidak ada link rusak)
 
@@ -274,13 +402,13 @@ UPDATE
 
 ===========================================================
 
-Setelah selesai:
+Setelah selesai setiap task:
 
 Update:
 
-.channelhub/STATE.yml
+.channelhub/STATE.yml (jika ada perubahan phase)
 
-Tambahkan entry baru ke
+Tambahkan entry baru ke:
 
 .channelhub/CHANGELOG.md
 
@@ -304,8 +432,7 @@ Gunakan START.md sebagai working context.
 
 JANGAN berhenti bekerja.
 
-Kerjakan HANYA satu deliverable pada bagian
-DELIVERABLES PHASE 22.
+Kerjakan HANYA satu task pada AI Trigger yang relevan.
 
 Tandai asumsi yang dipakai pada bagian akhir dokumen
 yang dihasilkan agar dapat diverifikasi kemudian.
