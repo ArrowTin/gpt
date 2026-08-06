@@ -86,11 +86,15 @@ current:
 
 next:
 
-  Start implementation in channelhub-app/
+  Start implementation in repo ArrowTin/channelhub
 
 output_directory:
 
-  channelhub-app/
+  ArrowTin/channelhub (repo terpisah)
+
+implementation_repo:
+
+  ArrowTin/channelhub
 
 contract_artifacts:
 

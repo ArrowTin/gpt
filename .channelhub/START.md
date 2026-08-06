@@ -196,10 +196,10 @@ OUTPUT DIRECTORY
 
 Seluruh implementasi source code WAJIB ditempatkan di:
 
-channelhub-app/
+Repo: ArrowTin/channelhub
 
-Struktur output:
-channelhub-app/
+Struktur output di repo ArrowTin/channelhub:
+channelhub/
 ├── apps/
 │   ├── backend/          # NestJS application
 │   └── frontend/         # NextJS application
@@ -209,7 +209,8 @@ channelhub-app/
 ├── tests/                # Test files
 └── docs/                 # Generated documentation
 
-JANGAN membuat source code di folder lain selain channelhub-app/
+JANGAN membuat source code di repo ini (ArrowTin/gpt).
+Semua implementasi di repo ArrowTin/channelhub.
 
 ===========================================================
 

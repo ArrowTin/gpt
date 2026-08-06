@@ -11,13 +11,15 @@ Menetapkan struktur dan konfigurasi output directory untuk implementasi ChannelH
 Seluruh implementasi source code WAJIB ditempatkan di:
 
 ```
-channelhub-app/
+Repo: ArrowTin/channelhub
 ```
+
+**Note:** Ini adalah repo terpisah dari dokumentasi (ArrowTin/gpt).
 
 ## Directory Structure
 
 ```
-channelhub-app/
+ArrowTin/channelhub/
 ├── apps/                          # Application layer
 │   ├── backend/                   # NestJS backend application
 │   │   ├── src/
@@ -111,9 +113,9 @@ channelhub-app/
 
 ### 1. Output Directory Only
 
-- **WAJIB**: Seluruh source code ditempatkan di `channelhub-app/`
-- **DILARANG**: Membuat source code di folder lain
-- **DILARANG**: Membuat source code di root repository
+- **WAJIB**: Seluruh source code ditempatkan di repo `ArrowTin/channelhub`
+- **DILARANG**: Membuat source code di repo ini (ArrowTin/gpt)
+- **DILARANG**: Membuat source code di folder lain selain ArrowTin/channelhub
 
 ### 2. Structure Compliance
 
@@ -146,7 +148,7 @@ channelhub-app/
 ### Development
 
 ```bash
-# channelhub-app/.env.development
+# ArrowTin/channelhub/.env.development
 DATABASE_URL=postgresql://localhost:5432/channelhub_dev
 REDIS_URL=redis://localhost:6379
 API_PORT=3000
@@ -157,7 +159,7 @@ NODE_ENV=development
 ### Staging
 
 ```bash
-# channelhub-app/.env.staging
+# ArrowTin/channelhub/.env.staging
 DATABASE_URL=postgresql://staging-db:5432/channelhub_staging
 REDIS_URL=redis://staging-redis:6379
 API_PORT=3000
@@ -168,7 +170,7 @@ NODE_ENV=staging
 ### Production
 
 ```bash
-# channelhub-app/.env.production
+# ArrowTin/channelhub/.env.production
 DATABASE_URL=postgresql://prod-db:5432/channelhub_prod
 REDIS_URL=redis://prod-redis:6379
 API_PORT=3000
@@ -181,14 +183,14 @@ NODE_ENV=production
 ### Local Development
 
 ```bash
-cd channelhub-app
+cd ArrowTin/channelhub
 docker-compose up -d
 ```
 
 ### Build
 
 ```bash
-cd channelhub-app
+cd ArrowTin/channelhub
 npm run build:backend
 npm run build:frontend
 ```
@@ -196,7 +198,7 @@ npm run build:frontend
 ### Test
 
 ```bash
-cd channelhub-app
+cd ArrowTin/channelhub
 npm run test
 npm run test:e2e
 npm run test:performance
@@ -205,7 +207,7 @@ npm run test:performance
 ### Deploy
 
 ```bash
-cd channelhub-app/infrastructure/terraform
+cd ArrowTin/channelhub/infrastructure/terraform
 terraform init
 terraform plan
 terraform apply
@@ -215,7 +217,7 @@ terraform apply
 
 ### Untuk AI:
 
-1. **Selalu** tempatkan source code di `channelhub-app/`
+1. **Selalu** tempatkan source code di repo `ArrowTin/channelhub`
 2. **Ikuti** struktur yang terdefinisi di atas
 3. **Pastikan** nama file dan folder konsisten dengan CONTRACT ARTIFACT
 4. **Tambahkan** test untuk setiap implementasi
@@ -226,7 +228,7 @@ terraform apply
 ```
 Implementasikan backend NestJS untuk auth module sesuai docs/13-backend-foundation/004-authentication-authorization-foundation.md.
 
-Output WAJIB di: channelhub-app/apps/backend/src/modules/auth/
+Output WAJIB di: ArrowTin/channelhub/apps/backend/src/modules/auth/
 
 Ikuti struktur:
 - auth.module.ts
@@ -237,7 +239,7 @@ Ikuti struktur:
 - guards/
 - strategies/
 
-Tambahkan unit test di: channelhub-app/apps/backend/test/modules/auth/
+Tambahkan unit test di: ArrowTin/channelhub/apps/backend/test/modules/auth/
 ```
 
 END OF OUTPUT CONFIGURATION

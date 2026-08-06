@@ -16,7 +16,7 @@
 6. Jalankan implementasi di folder: `channelhub-app/`
 
 ⚠️ **Aturan Wajib:**
-- Seluruh source code WAJIB di `channelhub-app/`
+- Seluruh source code WAJIB di repo `ArrowTin/channelhub` (repo terpisah)
 - Baca Contract Artifact sebelum menulis kode
 - Ikuti AI Trigger pada dokumentasi
 - Jangan tebak schema database atau API
@@ -51,7 +51,7 @@
 | **Milestone** | Documentation Enhancement Complete |
 | **Documentation Status** | ✅ 95% - Production Ready |
 | **Implementation Status** | ✅ Ready for Implementation |
-| **Output Directory** | `channelhub-app/` |
+| **Output Directory** | `ArrowTin/channelhub` (repo terpisah) |
 
 ---
 
@@ -67,14 +67,6 @@
   ├── 21-integration-deployment/  # Deployment & monitoring
   └── 22-security/                # Security & operations
 
-/channelhub-app/                   # 🎯 OUTPUT DIRECTORY (Implementation akan di sini)
-  ├── apps/
-  │   ├── backend/                 # NestJS application
-  │   └── frontend/                # NextJS application
-  ├── infrastructure/              # Terraform, Docker, K8s
-  ├── tests/                       # Test files
-  └── scripts/                     # Utility scripts
-
 /contracts/                        # Contract Artifact
   └── openapi/channelhub.v1.yaml  # API specification
 
@@ -82,6 +74,15 @@
   ├── START.md                     # AI bootstrap (WAJIB)
   ├── STATE.yml                    # Project status
   └── OUTPUT-CONFIG.md            # Output directory config
+
+🎯 IMPLEMENTATION DI REPO TERPISAH:
+ArrowTin/channelhub                # 🎯 OUTPUT DIRECTORY (Implementation di sini)
+  ├── apps/
+  │   ├── backend/                 # NestJS application
+  │   └── frontend/                # NextJS application
+  ├── infrastructure/              # Terraform, Docker, K8s
+  ├── tests/                       # Test files
+  └── scripts/                     # Utility scripts
 ```
 
 ---
@@ -239,6 +240,91 @@ Refactor task DEV-001
 
 ---
 
+## 📋 Dependency Rules
+
+**Urutan wajib diikuti:**
+
+1. **Database harus siap dulu** (DEV-003) → Backend (DEV-001) → Frontend (DEV-002)
+2. **Auth module harus siap** (DEV-004) → Modul lain (DEV-005, 006, 007, 008)
+3. **Auth UI harus siap** (DEV-009) → UI modul lain (DEV-010, 011, 012)
+4. **Infrastructure harus siap** (DEPLOY-001, 002, 003, 004) → Monitoring (DEPLOY-009, 010)
+5. **Backup harus siap** (BACKUP-001, 002, 003) → DR (BACKUP-004, 005, 006, 007)
+
+**Lihat dependency detail di `monitoring.md`**
+
+---
+
+## 📚 Documentation Reference
+
+**Setiap subtask memiliki dokumentasi yang perlu dibaca AI:**
+
+**Format di monitoring.md:**
+| Subtask | Description | Dependency | Documentation (Wajib) | Documentation (Opsional jika perlu) |
+|---------|-------------|------------|------------------------|-----------------------------------|
+| DEV-003-A | Create database connection | - | docs/15-database-implementation/005, docs/15-database-implementation/006 | docs/15-database-implementation/007 |
+
+**AI Workflow:**
+1. Baca README.md
+2. Baca monitoring.md untuk task yang akan dikerjakan
+3. Baca dokumentasi general (WAJIB):
+   - docs/00-foundation/009-global-implementation-rules.md
+   - .channelhub/OUTPUT-CONFIG.md
+4. Baca dokumentasi utama setiap task (WAJIB):
+   - Documentation (Wajib) di monitoring.md
+5. Baca dokumentasi lain jika dianggap perlu (OPSIONAL):
+   - Documentation (Opsional jika perlu) di monitoring.md
+   - Dokumentasi lain yang relevan berdasarkan konteks implementasi
+6. Implementasi sesuai dokumentasi di repo `ArrowTin/channelhub`
+7. Buat test untuk subtask tersebut
+8. Update progress
+
+**Contoh:**
+```
+Perintah: "Jalankan task DEV-003-A"
+
+AI akan:
+1. Baca monitoring.md → Lihat DEV-003-A
+2. Baca dokumentasi general:
+   - docs/00-foundation/009-global-implementation-rules.md
+   - .channelhub/OUTPUT-CONFIG.md
+3. Baca dokumentasi utama (Wajib):
+   - docs/15-database-implementation/005
+   - docs/15-database-implementation/006
+4. Baca dokumentasi opsional jika perlu:
+   - docs/15-database-implementation/007 (jika dianggap perlu)
+   - Dokumentasi lain yang relevan
+5. Implementasi database connection di repo ArrowTin/channelhub
+6. Buat test
+7. Update progress di monitoring.md
+```
+
+**Aturan Membaca Dokumentasi:**
+- ✅ **WAJIB:** Dokumentasi general (global rules, output config)
+- ✅ **WAJIB:** Documentation (Wajib) di monitoring.md
+- ✅ **BOLEH:** Documentation (Opsional jika perlu) di monitoring.md
+- ✅ **BOLEH:** Dokumentasi lain yang relevan berdasarkan konteks
+- ❌ **DILARANG:** Overloop membaca seluruh dokumentasi tanpa fokus
+
+---
+
+## 🧪 Testing Requirements
+
+**WAJIB:** Setiap subtask DEV dan DEPLOY harus memiliki testing:
+
+- **DEV subtasks:** Unit test diimplementasikan setelah selesai
+- **DEPLOY subtasks:** Infrastructure test/verification diimplementasikan setelah selesai
+- **MAINT subtasks:** Runbook test/test script diimplementasikan setelah selesai
+- **BACKUP subtasks:** Backup test/DR test diimplementasikan setelah selesai
+
+**Testing workflow untuk setiap subtask:**
+1. Implementasi subtask
+2. Buat test untuk subtask tersebut
+3. Jalankan test
+4. Pastikan test pass
+5. Update progress
+
+---
+
 ### Contoh Perintah Lengkap
 
 **Mulai implementasi backend:**
@@ -299,7 +385,8 @@ Lihat progress di monitoring.md
 
 **Last Updated:** 2026-08-06  
 **Last Task:** None  
-**Next Task:** DEV-001-A (Initialize NestJS project)
+**Next Task:** DEV-003-A (Create database connection)  
+**Implementation Repo:** ArrowTin/channelhub (repo terpisah)
 
 ---
 
